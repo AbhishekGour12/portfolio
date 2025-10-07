@@ -148,7 +148,7 @@ const getSkillIcon = (iconName, skillName) => {
   // Social icons data
   const socialIcons = [
     { icon: 'fa-github', link: 'https://github.com/AbhshekiCoder', color: 'text-gray-800 dark:text-white' },
-    { icon: 'fa-linkedin', link: 'https://www.linkedin.com/in/abhishek-gour-cs-a981b224b', color: 'text-blue-600' },
+    { icon: 'fa-linkedin', link: 'www.linkedin.com/in/abhishekgour12', color: 'text-blue-600' },
     { icon: 'fa-facebook', link: '#', color: 'text-blue-700' },
     { icon: 'fa-instagram', link: '#', color: 'text-pink-600' },
     { icon: 'fa-whatsapp', link: 'https://wa.link/c9zrjn', color: 'text-green-500' }
