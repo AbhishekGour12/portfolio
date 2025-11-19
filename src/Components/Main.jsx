@@ -789,7 +789,7 @@ const skills = [
                         </motion.div>
                       </motion.div>
                     </SwiperSlide>
-                  ))}
+                  )).reverse()}
                 </Swiper>
               </div>
 
@@ -1095,7 +1095,7 @@ const skills = [
 
 
     
-   {/** 
+   {/**  
       <section className="submit-project py-20 px-4 md:px-8 lg:px-16" data-aos="fade-up">
   <div className="max-w-3xl mx-auto">
     <h2 className="text-3xl font-bold text-center mb-8">Submit Your Project</h2>
@@ -1166,6 +1166,7 @@ const skills = [
   </div>
 </section>
 */}
+
 
 
 

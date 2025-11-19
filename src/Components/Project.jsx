@@ -131,7 +131,7 @@ function Project({ Profile1 }) {
               </div>
             )}
           </div>
-        ))
+        )).reverse()
       ) : (
         <p className="text-center text-lg text-gray-500">Loading projects...</p>
       )}
