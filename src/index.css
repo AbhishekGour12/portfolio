@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .group-hover-rotate-y-360:hover {
+    transform: rotateY(360deg);
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+}
+
+@keyframes spin-constant {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-skill-wheel {
+  animation: spin-constant 20s linear infinite;
+  transform-origin: center;
+}
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 10s linear infinite;
+}
+
+/* tailwind.config.css or index.css */
+@layer utilities {
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .rotate-y-0 {
+    transform: rotateY(0deg);
+  }
+  .group-hover\:rotate-y-\[360deg\]:hover {
+    transform: rotateY(360deg);
+  }
+}
