@@ -1467,10 +1467,10 @@ const skills = [
       </Swiper>
 
       {/* Simple Navigation */}
-      <div className="testimonial-prev absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center cursor-pointer hover:bg-orange-500 hover:text-white transition-colors z-10">
+      <div className="testimonial-prev absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-orange-500 hover:text-white transition-colors z-10">
         <i className="fas fa-chevron-left text-sm"></i>
       </div>
-      <div className="testimonial-next absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center cursor-pointer hover:bg-orange-500 hover:text-white transition-colors z-10">
+      <div className="testimonial-next absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full   shadow-lg flex items-center justify-center cursor-pointer hover:bg-orange-500 hover:text-white transition-colors z-10">
         <i className="fas fa-chevron-right text-sm"></i>
       </div>
     </div>
@@ -1478,7 +1478,7 @@ const skills = [
     {/* Simple Stats */}
     <div className="flex justify-center gap-6 mt-8">
       <div className="text-center">
-        <div className="text-xl font-bold text-orange-500">8+</div>
+        <div className="text-xl font-bold text-orange-500">20+</div>
         <div className={`text-xs ${Profile1 === 'white' ? 'text-gray-600' : 'text-gray-400'}`}>Projects</div>
       </div>
       <div className="text-center">
