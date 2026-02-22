@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Scrollbar, Autoplay } from 'swiper/modules';
+import { Navigation, Pagination, Scrollbar, Autoplay, EffectCoverflow } from 'swiper/modules';
 import { getDatabase, ref, get, set, push } from 'firebase/database';
 import { motion, AnimatePresence } from 'framer-motion';
 import AOS from 'aos';
@@ -21,6 +21,14 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import 'swiper/css/autoplay';
+import 'swiper/css/effect-coverflow';
+import { EffectCards,  EffectCube, EffectFlip } from 'swiper/modules';
+
+// Add these CSS imports for the effects
+import 'swiper/css/effect-cards';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/effect-cube';
+import 'swiper/css/effect-flip';
 
 function Main({ Profile1 }) {
   const [projects, setProjects] = useState([]);
@@ -34,7 +42,25 @@ function Main({ Profile1 }) {
     link: '',
     github: ''
   });
+  // Add this state for effect selection
+const [selectedEffect, setSelectedEffect] = useState('cards');
+  // Mouse parallax states
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [cursorTrail, setCursorTrail] = useState([]);
+  
   const navigate = useNavigate();
+  const parallaxRefs = useRef([]);
+  const trailRef = useRef([]); 
+
+
+  // Initialize animations
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
+  }, []);
+
 
   // Initialize animations
   useEffect(() => {
@@ -52,16 +78,27 @@ function Main({ Profile1 }) {
       const snapshot = await get(projectsRef);
       
       if (snapshot.exists()) {
-        setProjects(Object.values(snapshot.val()));
+        const projectsData = Object.values(snapshot.val());
+        // Merge with sample projects if needed
+        if (projectsData.length === 0) {
+          setProjects(sampleProjects);
+        } else {
+          setProjects(projectsData);
+        }
       } else {
-        console.log("No projects available");
+        console.log("No projects available, using sample projects");
+        
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching projects:", error);
+      
       setLoading(false);
     }
   };
+
+
+  
 // Helper function to get appropriate icon for each skill
 const getSkillIcon = (iconName, skillName) => {
   switch (iconName) {
@@ -147,11 +184,11 @@ const getSkillIcon = (iconName, skillName) => {
 
   // Social icons data
   const socialIcons = [
-    { icon: 'fa-github', link: 'https://github.com/AbhshekiCoder', color: 'text-gray-800 dark:text-white' },
-    { icon: 'fa-linkedin', link: 'www.linkedin.com/in/abhishekgour12', color: 'text-blue-600' },
-    { icon: 'fa-facebook', link: '#', color: 'text-blue-700' },
-    { icon: 'fa-instagram', link: 'https://www.instagram.com/devbyabhishek', color: 'text-pink-600' },
-    { icon: 'fa-whatsapp', link: 'https://wa.link/c9zrjn', color: 'text-green-500' }
+    { icon: 'fa-github', link: 'https://github.com/AbhshekiCoder', color: Profile1 === 'black'?'text-orange-400': 'text-gray-800' },
+    { icon: 'fa-linkedin', link: 'www.linkedin.com/in/abhishekgour12', color: Profile1 === "black"?'text-orange-400':'text-blue-600' },
+    { icon: 'fa-facebook', link: '#', color: Profile1 === 'black'?'text-orange-400':'text-blue-700' },
+    { icon: 'fa-instagram', link: 'https://www.instagram.com/devbyabhishek', color: Profile1 === 'black'?'text-orange-400':'text-pink-600' },
+    { icon: 'fa-whatsapp', link: 'https://wa.link/c9zrjn', color: Profile1 === 'black'?'text-orange-400':'text-green-500' }
   ];
 
   // Skills data
@@ -228,43 +265,190 @@ const skills = [
       alert('Failed to add project. Please try again.');
     });
   };
+  // Mouse parallax effect
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const { clientX, clientY } = e;
+      const x = (clientX / window.innerWidth - 0.5) * 20;
+      const y = (clientY / window.innerHeight - 0.5) * 20;
+      setMousePosition({ x, y });
 
+      // Update parallax elements
+      parallaxRefs.current.forEach((element) => {
+        if (element) {
+          const speed = element.getAttribute('data-speed') || 0.5;
+          const xPos = -x * speed;
+          const yPos = -y * speed;
+          element.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        }
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Cursor trail effect
+  useEffect(() => {
+    const handleTrailMove = (e) => {
+      const trailDot = {
+        x: e.clientX,
+        y: e.clientY,
+        id: Date.now() + Math.random()
+      };
+      
+      setCursorTrail(prev => [...prev.slice(-6), trailDot]);
+      
+      // Auto remove old trail dots
+      setTimeout(() => {
+        setCursorTrail(prev => prev.filter(dot => dot.id !== trailDot.id));
+      }, 1000);
+    };
+
+    window.addEventListener('mousemove', handleTrailMove);
+    return () => window.removeEventListener('mousemove', handleTrailMove);
+  }, []);
+ // Add these CSS animations
+  const styles = `
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .spin-skill-wheel {
+      animation: spin 20s linear infinite;
+    }
+    
+    .spin-skill-wheel:hover {
+      animation-play-state: paused;
+    }
+    
+    .skill-icon-float {
+      animation: float 3s ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+    
+    /* Custom cursor trail */
+    .cursor-trail {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.1s ease;
+    }
+    
+    /* Glowing text effect */
+    .glow-text {
+      text-shadow: 0 0 10px rgba(255, 107, 0, 0.5),
+                   0 0 20px rgba(255, 107, 0, 0.3),
+                   0 0 30px rgba(255, 107, 0, 0.1);
+    }
+    
+    /* 3D card effect */
+    .card-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    
+    .card-3d:hover {
+      transform: rotateY(10deg) rotateX(5deg) translateY(-10px);
+    }
+    
+    /* Parallax layers */
+    .parallax-layer {
+      transition: transform 0.1s linear;
+      will-change: transform;
+    }
+  `;
+// Add this CSS at the bottom of your component or in your global CSS file
   return (
     <>
-   
+   <style>{styles}</style>
+      
+      {/* Cursor Trail Dots */}
+      <div className="cursor-trails">
+        {cursorTrail.map((dot, index) => (
+          <div
+            key={dot.id}
+            className="cursor-trail"
+            style={{
+              left: dot.x - 4,
+              top: dot.y - 4,
+              background: `radial-gradient(circle, 
+                rgba(255,107,0,${0.8 - index * 0.1}) 0%, 
+                rgba(255,107,0,${0.4 - index * 0.1}) 50%, 
+                transparent 70%)`,
+              transform: `scale(${1 - index * 0.1})`,
+              opacity: 1 - index * 0.2,
+              filter: `blur(${index * 0.5}px)`
+            }}
+          />
+        ))}
+      </div>
+
     <div 
-      className="main-container w-full min-h-screen transition-colors duration-500 overflow-hidden"
+      className="main-container w-full  transition-colors duration-500 overflow-hidden"
       style={{ 
         backgroundColor: Profile1 === 'white' ? 'white' : '#0f172a',
         color: Profile1 === 'white' ? 'black' : 'white'
       }}
     >
-      {/* Floating Background Elements */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full opacity-10"
+      {/* Floating Background Elements with Parallax */}
+        <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+          {[...Array(20)].map((_, i) => {
+            const size = Math.random() * 80 + 20;
+            const speed = 0.2 + Math.random() * 0.8;
+            const delay = i * 0.5;
+            
+            return (
+              <motion.div
+                key={i}
+                ref={el => parallaxRefs.current[i] = el}
+                data-speed={speed}
+                className="absolute rounded-full opacity-10 parallax-layer"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  backgroundColor: Profile1 === 'white' ? '#f97316' : '#f97316',
+                  '--delay': `${delay}s`
+                }}
+                animate={{
+                  y: [0, Math.random() * 100 - 50],
+                  x: [0, Math.random() * 100 - 50],
+                  scale: [1, 1 + Math.random() * 0.5],
+                }}
+                transition={{
+                  duration: 10 + Math.random() * 20,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: delay
+                }}
+              />
+            );
+          })}
+
+          {/* Additional Parallax Layers */}
+          <div 
+            ref={el => parallaxRefs.current[20] = el}
+            data-speed="0.3"
+            className="absolute inset-0 parallax-layer opacity-5"
             style={{
-              width: `${Math.random() * 100 + 20}px`,
-              height: `${Math.random() * 100 + 20}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              backgroundColor: Profile1 === 'white' ? '#f97316' : '#f97316',
-            }}
-            animate={{
-              y: [0, Math.random() * 100 - 50],
-              x: [0, Math.random() * 100 - 50],
-              scale: [1, 1 + Math.random() * 0.5],
-            }}
-            transition={{
-              duration: 10 + Math.random() * 20,
-              repeat: Infinity,
-              repeatType: "reverse",
+              background: `radial-gradient(circle at ${mousePosition.x * 2}px ${mousePosition.y * 2}px, 
+                rgba(255,107,0,0.1) 0%, transparent 50%)`
             }}
           />
-        ))}
-      </div>
+        </div>
+
 
       {/* Hero Section */}
      {/* Hero Section */}
@@ -426,26 +610,8 @@ const skills = [
           ))}
         </motion.div>
 
-        {/* Floating Social Icons */}
-        <div className="social-icons absolute left-4 md:left-8 bottom-8 hidden md:flex flex-col gap-4 z-10">
-          {socialIcons.map((social, index) => (
-            <motion.a
-              key={index}
-              href={social.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`text-2xl ${social.color} hover:text-orange-500 transition-colors`}
-              whileHover={{ y: -5 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-            >
-              <i className={`fa-brands ${social.icon}`}></i>
-            </motion.a>
-          ))}
-        </div>
-      </section>
-
+    
+           </section>
       {/* Skills Section */}
     
 <section 
@@ -504,52 +670,74 @@ const skills = [
       </div>
 
       <div className="md:w-1/2 flex justify-center">
-        <div className="relative w-64 h-64 md:w-80 md:h-80">
-          {/* Entire spinning group */}
-          <div className="absolute inset-0 spin-skill-wheel">
-            {/* Animated rings */}
-            <div className="absolute inset-0 rounded-full border-8 border-orange-400 border-opacity-20"></div>
-            <div className="absolute inset-4 rounded-full border-8 border-pink-500 border-opacity-20"></div>
+              <div className="relative w-64 h-64 md:w-80 md:h-80">
+                <div className="absolute inset-0 spin-skill-wheel">
+                  {/* Interactive skill icons that follow mouse */}
+                  {skills.map((skill, index) => {
+                    const angle = (index * 360 / skills.length) - 90;
+                    const radius = 120;
+                    const x = radius * Math.cos(angle * Math.PI / 180);
+                    const y = radius * Math.sin(angle * Math.PI / 180);
 
-            {/* Rotating skill icons */}
-            {skills.map((skill, index) => {
-              const angle = (index * 360 / skills.length) - 90;
-              const radius = 120;
-              const x = radius * Math.cos(angle * Math.PI / 180);
-              const y = radius * Math.sin(angle * Math.PI / 180);
+                    return (
+                      <motion.div
+                        key={index}
+                        ref={el => trailRef.current[index] = el}
+                        className={`absolute w-12 h-12 flex items-center justify-center rounded-full dark:bg-gray-800 shadow-lg skill-icon-float ${Profile1 == "white"?'bg-white':'bg-gray-600'} group`}
+                        style={{
+                          left: `calc(50% + ${x}px - 24px)`,
+                          top: `calc(50% + ${y}px - 24px)`,
+                          '--delay': `${index * 0.1}s`
+                        }}
+                        whileHover={{ 
+                          scale: 1.5,
+                          zIndex: 100,
+                          transition: { type: "spring", stiffness: 300 }
+                        }}
+                        animate={{
+                          rotate: [0, 360]
+                        }}
+                        transition={{
+                          rotate: {
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: "linear"
+                          }
+                        }}
+                      >
+                        {getSkillIcon(skill.icon, skill.name)}
+                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          {skill.name} - {skill.level}%
+                        </div>
+                      </motion.div>
+                    );
+                  })}
 
-              return (
-                <motion.div
-                  key={index}
-                  className={`absolute w-12 h-12 flex items-center justify-center rounded-full dark:bg-gray-800 shadow-lg ${Profile1 == "white"?'bg-white':'bg-gray-600'}`}
-                  style={{
-                    left: `calc(50% + ${x}px - 24px)`,
-                    top: `calc(50% + ${y}px - 24px)`,
-                  }}
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                 
-                >
-                  {getSkillIcon(skill.icon, skill.name)}
-                </motion.div>
-              );
-            })}
-
-            {/* Center text */}
-            <motion.div 
-              className="absolute inset-16 rounded-full bg-gradient-to-br from-orange-400 to-pink-600 flex items-center justify-center shadow-xl"
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 1 }}
-            >
-              <span className="text-white font-bold text-xl">Skills</span>
-            </motion.div>
-          </div>
-        </div>
-      </div>
+                  {/* Center with mouse interaction */}
+                  <motion.div 
+                    className="absolute inset-16 rounded-full bg-gradient-to-br from-orange-400 to-pink-600 flex items-center justify-center shadow-xl cursor-pointer"
+                    whileHover={{ 
+                      scale: 1.1,
+                      rotate: 360,
+                      transition: { duration: 0.5 }
+                    }}
+                    style={{
+                      transform: `rotate(${mousePosition.x * 0.5}deg)`
+                    }}
+                  >
+                    <span className="text-white font-bold text-xl">Skills</span>
+                  </motion.div>
+                </div>
+              </div>
+    </div>
     </div>
   </div>
 </section>
 
+
+
+
+      
       {/* Services Section */}
       <section 
   className="services-section py-20 px-4 md:px-8 lg:px-16"
@@ -884,8 +1072,426 @@ const skills = [
         </div>
       </section>
       
+{/* Testimonials Section with Multiple Swiper Effects */}
 
-    
+<section 
+  className="testimonials-section py-20 px-4 md:px-8 lg:px-16"
+  style={{
+    backgroundColor: Profile1 === 'white' ? '#f8fafc' : '#0f172a',
+  }}
+  data-aos="fade-up"
+>
+  <div className="max-w-6xl mx-auto">
+    {/* Section Header */}
+    <div className="text-center mb-12">
+      <motion.h2 
+        className="text-3xl md:text-4xl font-bold mb-3"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        Client <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-pink-600">Testimonials</span>
+      </motion.h2>
+      <motion.p 
+        className={`text-lg max-w-2xl mx-auto ${Profile1 === 'white' ? 'text-gray-600' : 'text-gray-400'}`}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        What our clients say about working with us
+      </motion.p>
+      <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-pink-600 mx-auto mt-4"></div>
+    </div>
+
+    {/* Testimonials Cards - Fixed Height to Show All Content */}
+    <div className="relative px-4 md:px-12">
+      <Swiper
+        modules={[EffectCards, Navigation, Pagination, Autoplay]}
+        effect="cards"
+        grabCursor={true}
+        loop={true}
+        navigation={{
+          nextEl: '.testimonial-next',
+          prevEl: '.testimonial-prev',
+        }}
+        pagination={{
+          clickable: true,
+          dynamicBullets: true,
+        }}
+        cardsEffect={{
+          perSlideOffset: 8,
+          perSlideRotate: 2,
+          rotate: true,
+          slideShadows: false,
+        }}
+        autoplay={{ delay: 3000 }}
+        className="testimonial-swiper !pb-12 "
+        style={{
+          height: 'fit-content', // Fixed height that fits all content
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}
+      >
+        {/* Testimonial 1 - MyAstrova */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col "
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            {/* Rating - Fixed at top */}
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            {/* Testimonial Text - Fixed height with proper spacing */}
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "Working with Abhishek on MyAstrova was excellent. He delivered a platform with seamless astrology consultation features, real-time chat, and payment integration. Our users love the clean interface."
+              </p>
+            </div>
+
+            {/* Client Info - Fixed at bottom */}
+            <div className="pt-3 border-t p-3 " style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  RS
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Ravi Shastri</h4>
+                  <p className="text-xs text-orange-500 truncate">Founder, MyAstrova</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Delhi NCR</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full ">
+                    myastrova.com
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 2 - SST Trader */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col"
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "SST Trader ERP streamlined our accounting process. Inventory management, GST invoices, and sales tracking are exactly what our distribution business needed. Saves us hours of manual work daily."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  PM
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Prakash Mehta</h4>
+                  <p className="text-xs text-blue-500 truncate">Director, Mehta Distributors</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Mumbai</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full whitespace-nowrap">
+                    ssttrader.in
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 3 - Feastify */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col"
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "Feastify transformed our restaurant's online presence. The ordering system is intuitive with real-time tracking. Admin panel makes menu management effortless. Online orders increased significantly."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  AS
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Arjun Singh</h4>
+                  <p className="text-xs text-green-500 truncate">Owner, Singh Dhaba</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Ludhiana</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full whitespace-nowrap">
+                    feastify.com
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 4 - SkillRoot */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col"
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "SkillRoot made online learning engaging. Video lectures, quizzes, and resume generator work seamlessly. Abhishek's attention to educational needs made this project a success."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  DJ
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Deepak Joshi</h4>
+                  <p className="text-xs text-purple-500 truncate">Founder, SkillRoot</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Pune</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full whitespace-nowrap">
+                    skillroot.com
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 5 - FitCore */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl shadow-xl flex flex-col p-6 "
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "FitCore's website with membership management and growth analytics made gym administration simple. Clean UI attracts new members. Delivered exactly what we wanted on time."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  VR
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Vikram Rathore</h4>
+                  <p className="text-xs text-red-500 truncate">Owner, FitCore Gym</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Jaipur</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full whitespace-nowrap">
+                    fitcore.com
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 6 - BarleyHub */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col"
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "BarleyHub's website captures our café's ambiance perfectly. Interactive menu and table reservation are user-friendly. Customers love the clean design."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-yellow-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  SK
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Simran Kaur</h4>
+                  <p className="text-xs text-amber-500 truncate">Owner, BarleyHub Cafe</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Chandigarh</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full whitespace-nowrap">
+                    barleyhub.in
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 7 - SmileCare */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col"
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "SmileCare digitized our dental clinic operations effectively. Patient management, appointments, and billing are now hassle-free. Staff adapted quickly."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  NS
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Dr. Neha Sharma</h4>
+                  <p className="text-xs text-sky-500 truncate">Dentist, SmileCare Clinic</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Bangalore</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-full whitespace-nowrap">
+                    smilecare.com
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Testimonial 8 - Urban Property Dealers */}
+        <SwiperSlide>
+          <div 
+            className="h-full w-full rounded-2xl p-6 shadow-xl flex flex-col"
+            style={{
+              backgroundColor: Profile1 === 'white' ? '#ffffff' : '#1e293b',
+              border: `1px solid ${Profile1 === 'white' ? '#e2e8f0' : '#334155'}`,
+            }}
+          >
+            <div className="flex gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <i key={i} className="fas fa-star text-yellow-400 text-sm"></i>
+              ))}
+            </div>
+
+            <div className="flex-1 mb-4">
+              <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
+                "Urban Property Dealers website boosted property listings visibility. Lead generation forms bring quality inquiries daily. Property management is straightforward."
+              </p>
+            </div>
+
+            <div className="pt-3 border-t" style={{ borderColor: Profile1 === 'white' ? '#e2e8f0' : '#334155' }}>
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  RG
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm truncate">Rajesh Gupta</h4>
+                  <p className="text-xs text-emerald-500 truncate">Owner, Urban Property Dealers</p>
+                  <p className={`text-xs ${Profile1 === 'white' ? 'text-gray-500' : 'text-gray-400'} truncate`}>Indore</p>
+                </div>
+                <div className="ml-2 flex-shrink-0">
+                  <span className="text-[10px] px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full whitespace-nowrap">
+                    urbanpropertydealers.in
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
+
+      {/* Simple Navigation */}
+      <div className="testimonial-prev absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center cursor-pointer hover:bg-orange-500 hover:text-white transition-colors z-10">
+        <i className="fas fa-chevron-left text-sm"></i>
+      </div>
+      <div className="testimonial-next absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center cursor-pointer hover:bg-orange-500 hover:text-white transition-colors z-10">
+        <i className="fas fa-chevron-right text-sm"></i>
+      </div>
+    </div>
+
+    {/* Simple Stats */}
+    <div className="flex justify-center gap-6 mt-8">
+      <div className="text-center">
+        <div className="text-xl font-bold text-orange-500">8+</div>
+        <div className={`text-xs ${Profile1 === 'white' ? 'text-gray-600' : 'text-gray-400'}`}>Projects</div>
+      </div>
+      <div className="text-center">
+        <div className="text-xl font-bold text-orange-500">100%</div>
+        <div className={`text-xs ${Profile1 === 'white' ? 'text-gray-600' : 'text-gray-400'}`}>Satisfaction</div>
+      </div>
+      <div className="text-center">
+        <div className="text-xl font-bold text-orange-500">24/7</div>
+        <div className={`text-xs ${Profile1 === 'white' ? 'text-gray-600' : 'text-gray-400'}`}>Support</div>
+      </div>
+    </div>
+  </div>
+</section>
     
       {/* Contact Section */}
       <section 
@@ -948,7 +1554,7 @@ const skills = [
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-orange-500">agour4000@gmail.com</p>
+                    <p className="text-orange-500">gourabhishek130@gmail.com</p>
                   </div>
                 </motion.div>
                 
@@ -1062,7 +1668,24 @@ const skills = [
           </div>
         </div>
       </section>
-
+{/* Floating Social Icons */}
+        <div className="social-icons fixed left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50">
+          {socialIcons.map((social, index) => (
+            <motion.a
+              key={index}
+              href={social.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`text-2xl ${social.color} hover:text-orange-500 transition-colors`}
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
+            >
+              <i className={`fa-brands ${social.icon}`}></i>
+            </motion.a>
+          ))}
+        </div>
       {/* Footer */}
       <footer className="py-8 px-4 md:px-8 lg:px-16 bg-gray-100 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
