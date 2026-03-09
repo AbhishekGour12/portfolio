@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+
 // Assets
 import bg1 from '../Assets/user.webp';
 import p1 from '../Assets/p1 (1).png';
@@ -29,6 +30,7 @@ import 'swiper/css/effect-cards';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/effect-cube';
 import 'swiper/css/effect-flip';
+import HeroSection from './Home/HeroSection';
 
 function Main({ Profile1 }) {
   const [projects, setProjects] = useState([]);
@@ -451,167 +453,7 @@ const skills = [
 
 
       {/* Hero Section */}
-     {/* Hero Section */}
-<section className="hero-section relative overflow-hidden py-20 px-4 md:px-8 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-12">
-  {/* Left Text Section */}
-  <motion.div
-    className="details w-full md:w-1/2 z-10"
-    initial={{ opacity: 0, x: -50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.8 }}
-  >
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
-    >
-      <h1 className="text-2xl md:text-3xl font-light mb-2">Hi, I am</h1>
-      <motion.h2
-        className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-pink-600"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 1 }}
-      >
-        Abhishek Gour
-      </motion.h2>
-      
-      {/* New Bold Tagline */}
-      <motion.h3
-        className="text-2xl md:text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4, duration: 1 }}
-      >
-        Helping Brands Stand Out with Powerful Digital Solutions
-      </motion.h3>
-    </motion.div>
-    
-    <motion.div
-      className="detail mt-6 mb-8"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.6, duration: 1 }}
-    >
-      {/* Updated Description */}
-      <p className={`text-lg mb-6 ${Profile1 === 'white' ? 'text-gray-600' : 'text-gray-300'}`}>
-       Building high-performance Web & Android apps with a focus on clean design, speed, and scalability. I also explore AI-driven solutions to bring smart features into modern applications. Passionate about turning ideas into powerful digital products for startups and businesses worldwide.
-      </p>
-      
-      <div className="flex flex-wrap gap-4">
-        {/* New Primary CTA */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
-        >
-          <a href="#contact">Hire Me for Your Project</a>
-        </motion.button>
-        
-        {/* Secondary CTA */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-6 py-3 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition-all"
-        >
-          <a href={pdf} download="Abhishek_Gour_Resume.pdf">Download CV</a>
-        </motion.button>
-        
-        {/* Tertiary CTA */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
-        >
-          <Link to="/Project">View My Portfolio</Link>
-        </motion.button>
-      </div>
-      
-      {/* Social Proof */}
-      <motion.div 
-        className="mt-8 flex items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 1 }}
-      >
-      
-      </motion.div>
-    </motion.div>
-  </motion.div>
-
-        {/* Rotating-on-hover Image Section */}
-        <motion.div 
-          className="relative w-64 h-64 md:w-80 md:h-80 mt-10 md:mt-0 flex items-center justify-center group"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-        >
-          {/* Background Glow */}
-          <motion.div 
-            className="absolute w-full h-full rounded-full bg-gradient-to-r from-orange-400 to-pink-600 blur-2xl opacity-30 z-0"
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.3, 0.4, 0.3]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          {/* Glow Ring */}
-          <motion.div 
-            className="absolute w-[110%] h-[110%] rounded-full border-4 border-orange-400 opacity-20"
-            animate={{
-              scale: [1, 1.05],
-              opacity: [0.2, 0.4]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          {/* Image with Spinner Effect */}
-          <motion.div
-            className="relative z-10 w-full h-full rounded-full overflow-hidden"
-            whileHover={{ rotateY: 360 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            <img
-              src={bg1}
-              alt="Abhishek Gour"
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-          
-          {/* Floating Particles */}
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 rounded-full bg-orange-400"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, Math.random() * 40 - 20],
-                x: [0, Math.random() * 40 - 20],
-                opacity: [0.7, 0.4, 0.7],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 4,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
-          ))}
-        </motion.div>
-
-    
-           </section>
+     <HeroSection/>
       {/* Skills Section */}
     
 <section 
@@ -754,7 +596,7 @@ const skills = [
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        My Awesome
+        Our Awesome
       </motion.h2>
       <motion.h3 
         className="text-2xl md:text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-pink-600"
@@ -885,7 +727,7 @@ const skills = [
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              My Projects
+              Our Projects
             </motion.h2>
             <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-pink-600 mx-auto"></div>
           </div>
@@ -1153,7 +995,7 @@ const skills = [
             {/* Testimonial Text - Fixed height with proper spacing */}
             <div className="flex-1 mb-4">
               <p className={`text-sm leading-relaxed ${Profile1 === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
-                "Working with Abhishek on MyAstrova was excellent. He delivered a platform with seamless astrology consultation features, real-time chat, and payment integration. Our users love the clean interface."
+                "Working with Abhi Services on MyAstrova was excellent. He delivered a platform with seamless astrology consultation features, real-time chat, and payment integration. Our users love the clean interface."
               </p>
             </div>
 
@@ -1518,7 +1360,7 @@ const skills = [
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
             >
-              Contact Me
+              Contact Us
             </motion.h3>
             <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-pink-600 mx-auto mt-4"></div>
           </div>
@@ -1554,7 +1396,7 @@ const skills = [
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-orange-500">gourabhishek130@gmail.com</p>
+                    <p className="text-orange-500">abhiservices09@gmail.com</p>
                   </div>
                 </motion.div>
                 

@@ -63,7 +63,7 @@ function Navbar({ Profile1, mode }) {
 
                             {/* Desktop controls */}
                             <div className="flex items-center space-x-4 lg:space-x-6">
-                                {/* Dark mode toggle */}
+                                {/*
                                 <div className="flex items-center">
                                     <button
                                         onClick={mode}
@@ -82,6 +82,7 @@ function Navbar({ Profile1, mode }) {
                                         )}
                                     </span>
                                 </div>
+                                */}
 
                                 {/* Contact button */}
                                 <button className={`${isLight ? 'bg-blue-500 hover:bg-blue-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-medium py-2 px-4 lg:px-6 rounded-lg transition duration-300 transform hover:scale-105 active:scale-95`}>
