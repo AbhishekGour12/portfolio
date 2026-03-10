@@ -33,7 +33,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <section className="relative w-full overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Gradient Orbs */}
@@ -83,8 +83,8 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 lg:pb-24">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           
           {/* Left Content */}
           <motion.div
@@ -92,7 +92,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            style={{ y: y1 }}
+            style={{ y: typeof window !== "undefined" && window.innerWidth > 1024 ? y2 : 0 }}
           >
             {/* Badge */}
             <motion.div
@@ -206,7 +206,7 @@ const HeroSection = () => {
 
             {/* Statistics */}
             <motion.div
-              className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 pt-4 lg:pt-6"
+            className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 pt-4 lg:pt-6 max-w-md"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
@@ -240,8 +240,8 @@ const HeroSection = () => {
 
           {/* Right Content - Glassmorphism Cards */}
           <motion.div
-            className="relative mt-8 lg:mt-0"
-            style={{ y: y2 }}
+            className="relative mt-8 lg:mt-8"
+            style={{ y: typeof window !== "undefined" && window.innerWidth > 1024 ? y2 : 0 }}
           >
             {/* Background blur layer to ensure text visibility */}
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-transparent backdrop-blur-[2px] rounded-3xl z-0" />

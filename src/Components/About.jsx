@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 
 // Icons (you can replace with your preferred icon library)
@@ -412,23 +413,25 @@ const About = ({ Profile1 }) => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.a
-                  href="/contact"
+                <Link
+                  to = "/Contact"
                   whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(59,130,246,0.5)" }}
                   whileTap={{ scale: 0.95 }}
                   className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white font-semibold text-lg"
                 >
                   Start Your Project
-                </motion.a>
+                </Link>
                 
-                <motion.a
-                  href="/"
+                <motion.div
+                  
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white font-semibold text-lg hover:bg-white/10 transition-all"
                 >
+                  <Link to = "/Services"> 
                   Explore Services
-                </motion.a>
+                  </Link>
+                </motion.div>
               </div>
 
               <p className="mt-6 text-gray-400">

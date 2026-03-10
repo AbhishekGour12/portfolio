@@ -8,6 +8,8 @@ import Project from './Components/Project';
 import Admin from './Components/Admin';
 import Vlog from './Components/Vlog';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import Contact from './Components/Contact';
+import Services from './Components/Services';
 
 function App() {
   // Initialize state directly from localStorage to avoid flashing wrong colors
@@ -40,6 +42,8 @@ function App() {
           <Route path='/Project' element={<Project Profile1={toggle} />} ></Route>
           <Route path='/Admin' element={<Admin />} ></Route>
           <Route path='/Vlog' element={<Vlog Profile1={toggle} />} ></Route>
+          <Route path="/Contact" element={<Contact Profile1={toggle}/>}></Route>
+          <Route path='/Services' element={<Services Profile1={toggle} />} ></Route>
         </Routes>
       </div>
     </>

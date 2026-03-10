@@ -86,10 +86,10 @@ function Navbar({ Profile1, mode }) {
 
                                 {/* Contact button */}
                                 <button className={`${isLight ? 'bg-blue-500 hover:bg-blue-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-medium py-2 px-4 lg:px-6 rounded-lg transition duration-300 transform hover:scale-105 active:scale-95`}>
-                                    <a href="#contact" className="inline-flex items-center">
+                                    <Link to="/Contact" className="inline-flex items-center">
                                         Contact Us
                                         <i className="fa-solid fa-arrow-right ml-2 text-sm"></i>
-                                    </a>
+                                    </Link>
                                 </button>
                             </div>
                         </div>
