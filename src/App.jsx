@@ -10,7 +10,7 @@ import Vlog from './Components/Vlog';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Contact from './Components/Contact';
 import Services from './Components/Services';
-
+import Footer from './Components/Footer';
 function App() {
   // Initialize state directly from localStorage to avoid flashing wrong colors
   const [toggle, setToggle] = useState("black");
@@ -45,6 +45,7 @@ function App() {
           <Route path="/Contact" element={<Contact Profile1={toggle}/>}></Route>
           <Route path='/Services' element={<Services Profile1={toggle} />} ></Route>
         </Routes>
+        <Footer/>
       </div>
     </>
   )

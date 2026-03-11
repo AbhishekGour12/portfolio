@@ -35,6 +35,7 @@ import SkillsSection from './Home/SkillsSection';
 import ServiceSection from './Home/ServiceSection';
 import ProjectSection from './Home/ProjectSection';
 import TestimonialsSection from './Home/TestimonialSection';
+import Footer from './Footer';
 
 function Main({ Profile1 }) {
   const [projects, setProjects] = useState([]);
@@ -686,32 +687,7 @@ const skills = [
           ))}
         </div>
       {/* Footer */}
-      <footer className="py-8 px-4 md:px-8 lg:px-16 bg-gray-100 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <p className="text-gray-600 dark:text-gray-400">
-                &copy; {new Date().getFullYear()} Abhishek Gour. All rights reserved.
-              </p>
-            </div>
-            
-            <div className="flex gap-4">
-              {socialIcons.map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`text-xl ${social.color} hover:text-orange-500 transition-colors`}
-                  whileHover={{ y: -5 }}
-                >
-                  <i className={`fa-brands ${social.icon}`}></i>
-                </motion.a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </footer>
+     
     </div>
   
 
