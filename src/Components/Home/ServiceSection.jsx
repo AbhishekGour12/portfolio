@@ -235,7 +235,7 @@ const ServiceSection = () => {
           <div className="flex justify-center items-center gap-6 mt-8 text-slate-500 text-sm">
             <span className="flex items-center gap-2">
               <i className="fa-solid fa-rocket text-orange-400"></i>
-              50+ Projects
+              20+ Projects
             </span>
             <span className="w-1 h-1 rounded-full bg-slate-600" />
             <span className="flex items-center gap-2">
