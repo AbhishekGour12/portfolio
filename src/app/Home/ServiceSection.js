@@ -22,7 +22,7 @@ const services = [
     title: "Web Development",
     description: "Modern React, Next.js & MERN stack applications with blazing performance.",
     tag: "Most Popular",
-    size: "large", // spans 2 columns on desktop
+    size: "large",
     gradient: "from-[#1E40AF] to-[#1E3A8A]",
   },
   {
@@ -84,7 +84,7 @@ const getSpan = (size) => {
   }
 };
 
-// Individual Panel Component
+// Individual Panel Component – fully responsive typography
 const ServicePanel = ({ service, index }) => {
   const Icon = service.icon;
   const [hovered, setHovered] = React.useState(false);
@@ -102,8 +102,8 @@ const ServicePanel = ({ service, index }) => {
     <motion.div
       variants={panelVariants}
       whileHover={{
-        y: -8,
-        scale: 1.02,
+        y: -6,
+        scale: 1.01,
         transition: { type: "spring", stiffness: 300, damping: 20 },
       }}
       onMouseEnter={() => setHovered(true)}
@@ -125,33 +125,35 @@ const ServicePanel = ({ service, index }) => {
         />
       )}
 
-      {/* Subtle gradient overlay (static) */}
+      {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-50 pointer-events-none" />
 
-      {/* Content */}
-      <div className="relative p-6 h-full flex flex-col">
+      {/* Content – responsive padding + text sizes */}
+      <div className="relative p-5 sm:p-6 h-full flex flex-col">
         {/* Icon + Tag row */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-3 sm:mb-4">
           <motion.div
             animate={hovered ? { scale: 1.1, rotate: 3 } : { scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-md`}
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-md`}
           >
-            <Icon className="text-white text-xl" />
+            <Icon className="text-white text-base sm:text-xl" />
           </motion.div>
           {service.tag && (
-            <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-[#1E40AF]/10 text-[#1E40AF] border border-[#1E40AF]/20">
+            <span className="text-[9px] sm:text-[10px] font-semibold px-2 py-1 rounded-full bg-[#1E40AF]/10 text-[#1E40AF] border border-[#1E40AF]/20">
               {service.tag}
             </span>
           )}
         </div>
 
-        {/* Title */}
-        <h3 className="text-gray-800 font-bold text-xl mb-2">{service.title}</h3>
+        {/* Title – responsive font size */}
+        <h3 className="text-gray-800 font-bold text-lg sm:text-md mb-1.5 sm:mb-2">
+          {service.title}
+        </h3>
 
-        {/* Description with slide-up on hover */}
+        {/* Description – responsive + keeps readability */}
         <motion.p
-          className="text-gray-500 text-sm leading-relaxed"
+          className="text-gray-500 text-xs sm:text-sm leading-relaxed"
           initial={false}
           animate={hovered ? { y: -2, opacity: 1 } : { y: 0, opacity: 0.9 }}
           transition={{ duration: 0.2 }}
@@ -159,11 +161,11 @@ const ServicePanel = ({ service, index }) => {
           {service.description}
         </motion.p>
 
-        {/* Decorative line that appears on hover */}
+        {/* Decorative line */}
         <motion.div
-          className="absolute bottom-5 left-6 w-12 h-0.5 bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] rounded-full"
+          className="absolute bottom-5 left-5 sm:left-6 w-10 h-0.5 bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] rounded-full"
           initial={{ width: 0 }}
-          animate={hovered ? { width: 48 } : { width: 0 }}
+          animate={hovered ? { width: 40 } : { width: 0 }}
           transition={{ duration: 0.3 }}
         />
       </div>
@@ -178,7 +180,7 @@ const ServiceSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  // Floating particles / blobs (like hero section)
+  // Floating particles
   const particles = Array.from({ length: 12 }).map((_, i) => ({
     id: i,
     size: 2 + Math.random() * 6,
@@ -188,6 +190,7 @@ const ServiceSection = () => {
     delay: Math.random() * 8,
     opacity: 0.1 + Math.random() * 0.3,
   }));
+
   const techStack = [
     { name: "React", icon: <Code size={32} />, level: 95, color: "#61DAFB" },
     { name: "Next.js", icon: <Layout size={32} />, level: 92, color: "#000000" },
@@ -201,8 +204,8 @@ const ServiceSection = () => {
   ];
 
   return (
-    <section ref={ref} className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
-      {/* Background dot pattern (same as hero) */}
+    <section ref={ref} className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
+      {/* Background dot pattern */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.03] z-0"
         style={{
@@ -212,7 +215,7 @@ const ServiceSection = () => {
         }}
       />
 
-      {/* Animated blur blobs (matching hero) */}
+      {/* Animated blur blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           className="absolute -top-40 -right-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"
@@ -259,23 +262,23 @@ const ServiceSection = () => {
         ))}
       </div>
 
-      {/* Section Header */}
-      <div className="relative z-10 max-w-7xl mx-auto text-center mb-14">
+      {/* Section Header – fully responsive text */}
+      <div className="relative z-10 max-w-7xl mx-auto text-center mb-10 sm:mb-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1E40AF]/10 border border-[#1E40AF]/20 mb-6"
+          className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-[#1E40AF]/10 border border-[#1E40AF]/20 mb-5 sm:mb-6"
         >
-          <span className="w-2 h-2 rounded-full bg-[#1E40AF] animate-pulse" />
-          <span className="text-sm font-medium text-[#1E40AF]">Our Capabilities</span>
+          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#1E40AF] animate-pulse" />
+          <span className="text-xs sm:text-sm font-medium text-[#1E40AF]">Our Capabilities</span>
         </motion.div>
 
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4"
         >
           Engineering{" "}
           <span className="bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] bg-clip-text text-transparent">
@@ -287,40 +290,40 @@ const ServiceSection = () => {
           initial={{ opacity: 0, scaleX: 0 }}
           animate={isInView ? { opacity: 1, scaleX: 1 } : {}}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="w-20 h-1 mx-auto bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] rounded-full"
+          className="w-16 sm:w-20 h-1 mx-auto bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] rounded-full"
         />
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-gray-500 mt-6 max-w-2xl mx-auto text-sm sm:text-base"
+          className="text-gray-500 mt-5 sm:mt-6 max-w-2xl mx-auto text-sm sm:text-base px-2"
         >
           End‑to‑end solutions crafted with modern stacks, design precision, and enterprise‑grade reliability.
         </motion.p>
       </div>
 
-      {/* Bento Grid - Asymmetric Layout */}
+      {/* Bento Grid – responsive gaps & auto-rows */}
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-min">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 auto-rows-min">
           {services.map((service, idx) => (
             <ServicePanel key={idx} service={service} index={idx} />
           ))}
         </div>
       </div>
 
-      {/* Bottom CTA (optional, matches hero style) */}
+      {/* Bottom CTA */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.6, duration: 0.5 }}
-        className="relative z-10 text-center mt-16"
+        className="relative z-10 text-center mt-12 sm:mt-16"
       >
         <a
           href="/contact"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-200 shadow-sm text-gray-700 font-medium hover:shadow-md hover:border-[#1E40AF]/30 transition-all duration-300 mb-9"
+          className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white border border-gray-200 shadow-sm text-gray-700 font-medium text-sm sm:text-base hover:shadow-md hover:border-[#1E40AF]/30 transition-all duration-300 mb-6 sm:mb-9"
         >
-          Let’s discuss your project <FaRocket className="text-[#1E40AF] text-sm" />
+          Let’s discuss your project <FaRocket className="text-[#1E40AF] text-xs sm:text-sm" />
         </a>
       </motion.div>
 

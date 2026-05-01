@@ -5,11 +5,11 @@ import Link from "next/link";
 import { FaCheckCircle, FaChartLine, FaRocket, FaShieldAlt, FaAward } from "react-icons/fa";
 import Image from "next/image";
 
-// ========== Animated Counter Component ==========
+// ========== Animated Counter Component (better in‑view detection) ==========
 const AnimatedCounter = ({ target, suffix = "", duration = 1.5 }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -100px 0px", threshold: 0.1 });
 
   useEffect(() => {
     if (!isInView) return;
@@ -101,8 +101,6 @@ const HeroSection = () => {
     { icon: FaShieldAlt, label: "Success Rate", value: 99, suffix: "%" },
   ];
 
-  const navLinks = ["Home", "Services", "Work", "Contact"];
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -120,7 +118,7 @@ const HeroSection = () => {
     },
   };
 
-  // === Hydration fix: generate particles only on client ===
+  // Particles (client only)
   const [particles, setParticles] = useState([]);
   const [isClient, setIsClient] = useState(false);
 
@@ -140,144 +138,138 @@ const HeroSection = () => {
     setParticles(newParticles);
   }, []);
 
-  // Vertical infinite auto‑scroll carousel (Framer Motion)
-  // Vertical infinite auto‑scroll carousel (Framer Motion) – improved seamless loop
-const VerticalCarousel = ({ items }) => {
-  const [duplicatedItems, setDuplicatedItems] = useState([]);
-  const containerRef = useRef(null);
-  const [height, setHeight] = useState(0);
-  const y = useMotionValue(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const autoScrollTimeout = useRef(null);
-  const autoScrollActive = useRef(true);
+  // ========== Improved Vertical Carousel (smooth, no breaks) ==========
+  const VerticalCarousel = React.memo(({ items }) => {
+    const [duplicatedItems, setDuplicatedItems] = useState([]);
+    const containerRef = useRef(null);
+    const y = useMotionValue(0);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const autoScrollActive = useRef(true);
+    const autoScrollTimeout = useRef(null);
+    
+    // Fixed item height (including gap) for consistent scrolling
+    const ITEM_HEIGHT = 128; // px (h-28 = 112px + gap-4 = 16px)
+    const singleSetHeight = items.length * ITEM_HEIGHT;
+    const totalHeight = singleSetHeight * 3; // 3 copies
 
-  // Triple the items for seamless loop (3 copies)
-  useEffect(() => {
-    setDuplicatedItems([...items, ...items, ...items]);
-  }, [items]);
+    useEffect(() => {
+      setDuplicatedItems([...items, ...items, ...items]);
+    }, [items]);
 
-  // Measure height of one single set of items
-  useEffect(() => {
-    if (containerRef.current) {
-      const singleSetHeight = containerRef.current.scrollHeight / 3;
-      setHeight(singleSetHeight);
-    }
-  }, [duplicatedItems]);
+    // Auto-scroll animation
+    useAnimationFrame((t, delta) => {
+      if (!autoScrollActive.current || isHovered || isDragging) return;
+      const step = (35 * delta) / 1000; // 35px per second (slightly slower, smoother)
+      let newY = y.get() - step;
+      // Seamless wrap within [-singleSetHeight*2, 0]
+      if (newY <= -singleSetHeight * 2) {
+        newY += singleSetHeight;
+      } else if (newY > 0) {
+        newY = -singleSetHeight;
+      }
+      y.set(newY);
+    });
 
-  // Auto‑scroll animation (runs every frame)
-  useAnimationFrame((t, delta) => {
-    if (!height) return;
-    if (isHovered || isDragging || !autoScrollActive.current) return;
-    const step = (40 * delta) / 1000; // 40px per second
-    let newY = y.get() - step;
-    // Seamless wrap: keep y within [-2*height, 0] range
-    if (newY <= -height * 2) {
-      newY += height;
-    } else if (newY > 0) {
-      newY = -height;
-    }
-    y.set(newY);
-  });
+    const handleMouseEnter = () => setIsHovered(true);
+    const handleMouseLeave = () => setIsHovered(false);
 
-  // Handle manual scroll with mouse wheel
-  const handleWheel = (e) => {
-    if (!autoScrollActive.current) return;
-    // Pause auto-scroll for 2 seconds
-    autoScrollActive.current = false;
-    if (autoScrollTimeout.current) clearTimeout(autoScrollTimeout.current);
-    autoScrollTimeout.current = setTimeout(() => {
-      autoScrollActive.current = true;
-    }, 2000);
-    // Apply wheel delta (inverted sign for natural direction)
-    let newY = y.get() + e.deltaY * 0.5;
-    if (newY <= -height * 2) newY += height;
-    else if (newY > 0) newY = -height;
-    y.set(newY);
-  };
+    const handleWheel = (e) => {
+      if (!autoScrollActive.current) return;
+      autoScrollActive.current = false;
+      if (autoScrollTimeout.current) clearTimeout(autoScrollTimeout.current);
+      autoScrollTimeout.current = setTimeout(() => {
+        autoScrollActive.current = true;
+      }, 2000);
+      let newY = y.get() + e.deltaY * 0.8;
+      if (newY <= -singleSetHeight * 2) newY += singleSetHeight;
+      else if (newY > 0) newY = -singleSetHeight;
+      y.set(newY);
+    };
 
-  // Drag handlers for manual sliding
-  const handleDragStart = () => {
-    setIsDragging(true);
-    autoScrollActive.current = false;
-    if (autoScrollTimeout.current) clearTimeout(autoScrollTimeout.current);
-  };
-  const handleDrag = (_, info) => {
-    let newY = y.get() + info.delta.y;
-    if (newY <= -height * 2) newY += height;
-    else if (newY > 0) newY = -height;
-    y.set(newY);
-  };
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    autoScrollTimeout.current = setTimeout(() => {
-      autoScrollActive.current = true;
-    }, 2000);
-  };
+    const handleDragStart = () => {
+      setIsDragging(true);
+      autoScrollActive.current = false;
+      if (autoScrollTimeout.current) clearTimeout(autoScrollTimeout.current);
+    };
+    const handleDrag = (_, info) => {
+      let newY = y.get() + info.delta.y;
+      if (newY <= -singleSetHeight * 2) newY += singleSetHeight;
+      else if (newY > 0) newY = -singleSetHeight;
+      y.set(newY);
+    };
+    const handleDragEnd = () => {
+      setIsDragging(false);
+      autoScrollTimeout.current = setTimeout(() => {
+        autoScrollActive.current = true;
+      }, 2000);
+    };
 
-  return (
-    <div
-      className="relative overflow-hidden h-[420px] sm:h-[480px] md:h-[520px] cursor-grab active:cursor-grabbing"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onWheel={handleWheel}
-    >
-      <motion.div
-        ref={containerRef}
-        className="flex flex-col gap-4"
-        style={{ y }}
-        drag="y"
-        dragElastic={0}
-        dragMomentum={false}
-        onDragStart={handleDragStart}
-        onDrag={handleDrag}
-        onDragEnd={handleDragEnd}
+    return (
+      <div
+        className="relative overflow-hidden h-[420px] sm:h-[480px] md:h-[520px] cursor-grab active:cursor-grabbing"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onWheel={handleWheel}
       >
-        {duplicatedItems.map((item, idx) => (
-          <motion.div
-            key={`${item.title}-${idx}`}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className="group bg-white/70 backdrop-blur-md border border-blue-100/50 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
-          >
-            <div className="flex flex-row">
-              <div className="w-1/3 overflow-hidden relative">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={120}
-                  height={120}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  style={{ height: '100%' }}
-                  loading="eager"
-                />
-              </div>
-              <div className="w-2/3 p-3 flex flex-col justify-between">
-                <div>
-                  <h4 className="text-sm sm:text-base font-bold text-gray-800 line-clamp-2">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                    {item.description}
-                  </p>
+        <motion.div
+          ref={containerRef}
+          className="flex flex-col gap-4"
+          style={{ y }}
+          drag="y"
+          dragElastic={0}
+          dragMomentum={false}
+          onDragStart={handleDragStart}
+          onDrag={handleDrag}
+          onDragEnd={handleDragEnd}
+        >
+          {duplicatedItems.map((item, idx) => (
+            <motion.div
+              key={`${item.title}-${idx}`}
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group bg-white/70 backdrop-blur-md border border-blue-100/50 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-28 sm:h-28 md:h-28"
+            >
+              <div className="flex flex-row h-full">
+                <div className="w-1/3 overflow-hidden relative">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={120}
+                    height={112}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="eager"
+                  />
                 </div>
-                <div className="mt-2 flex justify-end">
-                  <span className="text-blue-600 text-sm group-hover:translate-x-1 transition-transform">
-                    →
-                  </span>
+                <div className="w-2/3 p-3 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-sm sm:text-base font-bold text-gray-800 line-clamp-2">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {item.description}
+                    </p>
+                  </div>
+                  <div className="mt-2 flex justify-end">
+                    <span className="text-blue-600 text-sm group-hover:translate-x-1 transition-transform">
+                      →
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-    </div>
-  );
-};
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    );
+  });
+  VerticalCarousel.displayName = "VerticalCarousel";
+
   return (
     <section className="relative w-full overflow-hidden bg-white">
-      {/* Global styles (same as before) */}
+      {/* Global styles omitted for brevity (keep same as original) */}
       <style jsx global>{`
+        /* Keep all animations from original (gradientShift, rotateBorder, shimmer, glowPulse, floatOrb) */
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -329,7 +321,7 @@ const VerticalCarousel = ({ items }) => {
         }
       `}</style>
 
-      {/* Grid pattern (no random, safe) */}
+      {/* Grid pattern – same as original */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.04] z-0"
         style={{
@@ -339,7 +331,7 @@ const VerticalCarousel = ({ items }) => {
         }}
       />
 
-      {/* Animated Gradient Blobs (safe – no random) */}
+      {/* Animated Gradient Blobs – unchanged */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           className="absolute -top-40 -right-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"
@@ -364,11 +356,11 @@ const VerticalCarousel = ({ items }) => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-blue-100/5 to-transparent" />
       </div>
 
-      {/* Floating Orbs (safe) */}
+      {/* Floating Orbs */}
       <div className="absolute top-[15%] left-[5%] w-32 h-32 rounded-full bg-blue-400/5 blur-2xl float-orb pointer-events-none" />
       <div className="absolute bottom-[10%] right-[8%] w-48 h-48 rounded-full bg-indigo-300/5 blur-3xl float-orb pointer-events-none" style={{ animationDelay: "-5s" }} />
 
-      {/* Enhanced Floating Particles – only render on client to avoid hydration mismatch */}
+      {/* Particles – client only */}
       {isClient && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {particles.map((particle) => (
@@ -398,12 +390,10 @@ const VerticalCarousel = ({ items }) => {
         </div>
       )}
 
-      
-
       {/* Hero Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* LEFT COLUMN (unchanged) */}
+          {/* LEFT COLUMN */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -465,7 +455,7 @@ const VerticalCarousel = ({ items }) => {
             </motion.div>
           </motion.div>
 
-          {/* RIGHT COLUMN – Vertical Expertise Showcase Panel */}
+          {/* RIGHT COLUMN – Vertical Carousel */}
           <motion.div
             initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
@@ -474,16 +464,10 @@ const VerticalCarousel = ({ items }) => {
             className="relative flex justify-center mt-8 lg:mt-0"
           >
             <div className="relative w-full max-w-md lg:max-w-lg">
-              {/* Subtle glow behind */}
               <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-3xl" />
-
-              {/* Main Glass Container */}
               <div className="relative backdrop-blur-2xl bg-white/30 border border-white/80 rounded-3xl shadow-2xl p-3 sm:p-4 overflow-hidden z-10">
-                {/* Top & Bottom Gradient Fades */}
                 <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white/30 to-transparent rounded-t-3xl pointer-events-none z-10" />
                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white/30 to-transparent rounded-b-3xl pointer-events-none z-10" />
-
-                {/* Vertical Infinite Scroll Container */}
                 <VerticalCarousel items={expertiseItems} />
               </div>
             </div>
@@ -505,12 +489,6 @@ const VerticalCarousel = ({ items }) => {
           />
         </div>
       </motion.div>
-
-      <style jsx>{`
-        .bg-conic-gradient {
-          background: conic-gradient(from 0deg at 50% 50%, #1E40AF, #4338CA, #1E3A8A, #1E40AF);
-        }
-      `}</style>
     </section>
   );
 };
