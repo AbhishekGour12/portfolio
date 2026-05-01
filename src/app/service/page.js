@@ -401,7 +401,7 @@ const ServicesPage = () => {
             </div>
           </section>
 
-          <footer className="border-t border-gray-100 py-6 text-center text-gray-400 text-xs">
+          <footer className="border-t border-gray-100 py-6 text-center text-gray-400 text-xs ">
             <p>© 2026 Abhi Services — Precision engineering for the modern web.</p>
           </footer>
         </div>
