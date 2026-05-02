@@ -165,7 +165,7 @@ const ServicesPage = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <div className="flex gap-3 justify-center">
                   <Link href="/contact">
                     <motion.button
                       whileHover={{ scale: 1.03 }}
