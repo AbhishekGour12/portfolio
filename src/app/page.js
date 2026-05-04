@@ -1,3 +1,5 @@
+import Logo from "./Home/Logo";
+import DemoVideoSection from "./Home/DemoVideoSection";
 import HeroSection from "./Home/HeroSection";
 import ProjectSection from "./Home/ProjectSection";
 import ServiceSection from "./Home/ServiceSection";
@@ -8,6 +10,8 @@ export default function Home() {
   return (
     <>
    <HeroSection/>
+   <Logo/>
+   <DemoVideoSection/>
    <SkillsSection/>
    <ProjectSection/>
    <ServiceSection/>
