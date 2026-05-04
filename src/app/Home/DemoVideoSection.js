@@ -25,7 +25,7 @@ const DemoVideoSection = () => {
   ];
 
   // Cloudinary video URL (replace with your own demo video)
-  const videoUrl = "https://res.cloudinary.com/duo5hrj5r/video/upload/v1777878059/Recording_2026-05-04_123028_gelim9.mp4";
+  const videoUrl = "https://res.cloudinary.com/duo5hrj5r/video/upload/v1777917683/Untitled_2_kncauc.mp4";
   return (
     <section
       ref={sectionRef}
@@ -142,7 +142,6 @@ const DemoVideoSection = () => {
   ref={videoRef}
   src={videoUrl}
   autoPlay
-  muted
   loop
   playsInline
   className="w-full h-full object-contain bg-black rounded-2xl transition-transform duration-700 group-hover:scale-105"
