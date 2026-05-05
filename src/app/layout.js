@@ -44,7 +44,7 @@ export const metadata = {
     siteName: "Abhi Services",
     images: [
       {
-        url: "/og-image.png", // add your image in public folder
+        url: "/logo.png", // add your image in public folder
         width: 1200,
         height: 630,
         alt: "Abhi Services - Digital Agency",
@@ -59,7 +59,7 @@ export const metadata = {
     title: "Abhi Services | Web & SaaS Development",
     description:
       "Premium web development, SaaS solutions, and UI/UX design for modern businesses.",
-    images: ["/og-image.png"],
+    images: ["/logo.png"],
   },
 
   robots: {
