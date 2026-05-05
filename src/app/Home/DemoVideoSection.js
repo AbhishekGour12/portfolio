@@ -1,20 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Play, ChevronRight, CheckCircle2, Star } from "lucide-react";
+import { Play, Pause, ChevronRight, CheckCircle2, Star } from "lucide-react";
 import Link from "next/link";
 
 const DemoVideoSection = () => {
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const isInView = useInView(sectionRef, { once: false, amount: 0.3 }); // 'once: false' to detect when it leaves view
   const videoRef = useRef(null);
-
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
-  }, []);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Trust points
   const trustPoints = [
@@ -24,8 +21,35 @@ const DemoVideoSection = () => {
     { text: "Fast performance", icon: <CheckCircle2 size={18} /> },
   ];
 
-  // Cloudinary video URL (replace with your own demo video)
   const videoUrl = "https://res.cloudinary.com/duo5hrj5r/video/upload/v1777917683/Untitled_2_kncauc.mp4";
+
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
+  }, []);
+
+  // Auto-play/pause based on visibility
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (isInView) {
+      videoRef.current.play().catch(err => console.log("Auto-play prevented:", err));
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [isInView]);
+
+  const togglePlayPause = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -34,7 +58,7 @@ const DemoVideoSection = () => {
         background: "radial-gradient(circle at 10% 30%, #f0f9ff 0%, #ffffff 60%, #e0f2fe 100%)",
       }}
     >
-      {/* Animated blue blobs background */}
+      {/* Animated blue blobs background (unchanged) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
           className="absolute -top-40 -right-20 w-96 h-96 bg-blue-200/40 rounded-full blur-3xl"
@@ -51,7 +75,6 @@ const DemoVideoSection = () => {
           animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 15, repeat: Infinity }}
         />
-        {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.02]" />
       </div>
 
@@ -71,7 +94,7 @@ const DemoVideoSection = () => {
 
         {/* Two column layout */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* LEFT COLUMN – content */}
+          {/* LEFT COLUMN – content (unchanged) */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -88,7 +111,6 @@ const DemoVideoSection = () => {
               From concept to scalable reality – watch how we engineer digital solutions that drive business growth.
             </p>
 
-            {/* Trust points as grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               {trustPoints.map((point, idx) => (
                 <motion.div
@@ -104,7 +126,6 @@ const DemoVideoSection = () => {
               ))}
             </div>
 
-            {/* CTA Button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -120,13 +141,12 @@ const DemoVideoSection = () => {
               </Link>
             </motion.div>
 
-            {/* Small testimonial / trust line */}
             <p className="text-gray-500 text-sm italic border-l-2 border-[#1E40AF] pl-4 mt-6">
               “Built for performance, designed for impact — helping businesses scale with confidence.”
             </p>
           </motion.div>
 
-          {/* RIGHT COLUMN – video container */}
+          {/* RIGHT COLUMN – video with custom controls */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -138,27 +158,44 @@ const DemoVideoSection = () => {
 
             {/* Video container */}
             <div className="relative group rounded-2xl overflow-hidden shadow-2xl border border-white/50 backdrop-blur-sm transition-all duration-500 hover:shadow-[0_0_30px_rgba(96,165,250,0.5)]">
-             <video
-  ref={videoRef}
-  src={videoUrl}
-  autoPlay
-  loop
-  playsInline
-  className="w-full h-full object-contain bg-black rounded-2xl transition-transform duration-700 group-hover:scale-105"
-  style={{ aspectRatio: "9 / 16", maxHeight: "400px" }}
-/>
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                loop
+                playsInline
+                muted={false}
+                className="w-full h-full object-contain bg-black rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                style={{ aspectRatio: "9 / 16", maxHeight: "400px" }}
+              />
               {/* Soft gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none rounded-2xl" />
 
-              {/* Optional play icon overlay (visible on hover) */}
+              {/* Play/Pause control button (always visible, premium style) */}
+              <button
+                onClick={togglePlayPause}
+                className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center hover:bg-white/40 transition-all shadow-lg"
+                aria-label={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? (
+                  <Pause className="w-5 h-5 text-white" />
+                ) : (
+                  <Play className="w-5 h-5 text-white ml-0.5" />
+                )}
+              </button>
+
+              {/* Optional play icon overlay on hover (no longer needed but kept for elegance) */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <div className="w-16 h-16 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center border border-white/60">
-                  <Play className="w-8 h-8 text-white drop-shadow-lg" fill="white" />
+                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/60">
+                  {isPlaying ? (
+                    <Pause className="w-6 h-6 text-white" />
+                  ) : (
+                    <Play className="w-6 h-6 text-white ml-1" />
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Mini thumbnails / case study links (high-end touch) */}
+            {/* Mini thumbnails / case study links */}
             <div className="flex justify-center gap-3 mt-5">
               {["E‑Commerce Demo", "SaaS Dashboard", "Mobile App"].map((label, idx) => (
                 <button
