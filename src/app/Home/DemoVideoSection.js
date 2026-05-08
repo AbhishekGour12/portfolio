@@ -9,27 +9,41 @@ import Link from "next/link";
 
 const DemoVideoSection = () => {
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.3 }); // 'once: false' to detect when it leaves view
+  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [videoSrc, setVideoSrc] = useState("");
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  // Video URLs
+  const videoUrlDesktop = "https://res.cloudinary.com/duo5hrj5r/video/upload/v1778239119/Untitled_2_j4amst.mp4";
+  const videoUrlMobile = "https://res.cloudinary.com/duo5hrj5r/video/upload/v1777917683/Untitled_2_kncauc.mp4";
 
   // Trust points
   const trustPoints = [
-    { text: "Real client projects", icon: <CheckCircle2 size={18} /> },
-    { text: "Scalable architecture", icon: <CheckCircle2 size={18} /> },
-    { text: "Clean UI/UX", icon: <CheckCircle2 size={18} /> },
-    { text: "Fast performance", icon: <CheckCircle2 size={18} /> },
-  ];
-
-  const videoUrl = "https://res.cloudinary.com/duo5hrj5r/video/upload/v1777917683/Untitled_2_kncauc.mp4";
-
+  { text: "Custom Web & SaaS Development", icon: <CheckCircle2 size={18} /> },
+  { text: "SEO-Optimized & Fast Performance", icon: <CheckCircle2 size={18} /> },
+  { text: "Modern UI/UX & Responsive Design", icon: <CheckCircle2 size={18} /> },
+  { text: "Secure, Scalable Architecture", icon: <CheckCircle2 size={18} /> },
+];
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
+
+    // Detect screen size and set video source
+    const handleResize = () => {
+      const desktop = window.innerWidth >= 768;
+      setIsDesktop(desktop);
+      setVideoSrc(desktop ? videoUrlDesktop : videoUrlMobile);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Auto-play/pause based on visibility
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !videoSrc) return;
     if (isInView) {
       videoRef.current.play().catch(err => console.log("Auto-play prevented:", err));
       setIsPlaying(true);
@@ -37,7 +51,7 @@ const DemoVideoSection = () => {
       videoRef.current.pause();
       setIsPlaying(false);
     }
-  }, [isInView]);
+  }, [isInView, videoSrc]);
 
   const togglePlayPause = () => {
     if (!videoRef.current) return;
@@ -58,7 +72,7 @@ const DemoVideoSection = () => {
         background: "radial-gradient(circle at 10% 30%, #f0f9ff 0%, #ffffff 60%, #e0f2fe 100%)",
       }}
     >
-      {/* Animated blue blobs background (unchanged) */}
+      {/* Animated blue blobs background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
           className="absolute -top-40 -right-20 w-96 h-96 bg-blue-200/40 rounded-full blur-3xl"
@@ -94,7 +108,7 @@ const DemoVideoSection = () => {
 
         {/* Two column layout */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* LEFT COLUMN – content (unchanged) */}
+          {/* LEFT COLUMN – content */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -102,15 +116,14 @@ const DemoVideoSection = () => {
             className="space-y-6 text-center lg:text-left"
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-              See How We Build <br />
+            We Build Scalable Digital Solutions <br />
               <span className="bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] bg-clip-text text-transparent">
-                High‑Performance Products
+               That Drive Real Business Growth 
               </span>
             </h2>
             <p className="text-gray-600 text-base md:text-lg max-w-lg mx-auto lg:mx-0">
-              From concept to scalable reality – watch how we engineer digital solutions that drive business growth.
+             We help startups, businesses, and growing brands build modern websites, SaaS platforms, dashboards, and AI-powered solutions designed for performance, scalability, and long-term growth.
             </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               {trustPoints.map((point, idx) => (
                 <motion.div
@@ -134,7 +147,7 @@ const DemoVideoSection = () => {
             >
               <Link href="/contact">
                 <button className="group relative px-8 py-3.5 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto lg:mx-0">
-                  Start Your Project
+                 Build Your Digital Product
                   <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#60A5FA] to-[#1E40AF] opacity-0 group-hover:opacity-20 transition-opacity" />
                 </button>
@@ -142,8 +155,8 @@ const DemoVideoSection = () => {
             </motion.div>
 
             <p className="text-gray-500 text-sm italic border-l-2 border-[#1E40AF] pl-4 mt-6">
-              “Built for performance, designed for impact — helping businesses scale with confidence.”
-            </p>
+             “More than just websites — we create digital experiences that help businesses grow, engage customers, and scale faster.”
+             </p>
           </motion.div>
 
           {/* RIGHT COLUMN – video with custom controls */}
@@ -156,21 +169,22 @@ const DemoVideoSection = () => {
             {/* Glow behind video */}
             <div className="absolute -inset-4 bg-gradient-to-r from-[#60A5FA]/30 to-[#1E40AF]/30 rounded-3xl blur-2xl group-hover:blur-3xl transition-all" />
 
-            {/* Video container */}
+            {/* Video container – aspect ratio changes with screen */}
             <div className="relative group rounded-2xl overflow-hidden shadow-2xl border border-white/50 backdrop-blur-sm transition-all duration-500 hover:shadow-[0_0_30px_rgba(96,165,250,0.5)]">
-              <video
-                ref={videoRef}
-                src={videoUrl}
-                loop
-                playsInline
-                muted={false}
-                className="w-full h-full object-contain bg-black rounded-2xl transition-transform duration-700 group-hover:scale-105"
-                style={{ aspectRatio: "9 / 16", maxHeight: "400px" }}
-              />
+              <div className={`relative w-full ${isDesktop ? "aspect-video" : "aspect-[9/16]"}`}>
+                <video
+                  ref={videoRef}
+                  src={videoSrc}
+                  loop
+                  playsInline
+                  muted={false}
+                  className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
               {/* Soft gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none rounded-2xl" />
 
-              {/* Play/Pause control button (always visible, premium style) */}
+              {/* Play/Pause control button (always visible) */}
               <button
                 onClick={togglePlayPause}
                 className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/50 flex items-center justify-center hover:bg-white/40 transition-all shadow-lg"
@@ -183,7 +197,7 @@ const DemoVideoSection = () => {
                 )}
               </button>
 
-              {/* Optional play icon overlay on hover (no longer needed but kept for elegance) */}
+              {/* Center overlay on hover */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                 <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/60">
                   {isPlaying ? (

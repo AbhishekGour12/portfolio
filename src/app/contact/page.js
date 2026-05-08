@@ -189,7 +189,7 @@ const Contact = () => {
                 {[
                   { icon: "💬", label: "WhatsApp", href: "https://wa.me/916266834504" },
                   { icon: "📞", label: "Call", href: "tel:+916266834504" },
-                  { icon: "✉️", label: "Email", href: "mailto:abhiservices09@gmail.com" },
+                  { icon: "✉️", label: "Email", href: "mailto:abhishek@abhi.services" },
                 ].map((item) => (
                   <motion.a
                     key={item.label}
