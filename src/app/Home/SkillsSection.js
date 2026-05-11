@@ -300,38 +300,75 @@ const FloatingParticles = () => {
 // LEFT COLUMN – Premium skill highlights
 // ─────────────────────────────────────────────
 const LeftColumn = () => {
-  const techGroups = [
-    {
-      category: "Frontend & UI",
-      items: ["React", "Next.js", "Tailwind CSS", "UI/UX Design"],
-      icon: "🎨",
-    },
-    {
-      category: "Backend & Database",
-      items: ["Node.js", "PHP", "MySQL", "MongoDB", "Firebase"],
-      icon: "⚙️",
-    },
-    {
-      category: "Mobile & Real-Time",
-      items: ["React Native", "Socket.io"],
-      icon: "📱",
-    },
-    {
-      category: "DevOps & Marketing",
-      items: ["Deployment (Vercel, Netlify, Hostinger, AWS etc)", "Digital Marketing, SEO"],
-      icon: "🚀",
-    },
-  ];
+ const techGroups = [
+  {
+    category: "Frontend & UI Engineering",
+    items: [
+      "React.js",
+      "Next.js",
+      "Tailwind CSS",
+      "TypeScript",
+      "Framer Motion",
+      "Responsive UI/UX"
+    ],
+    icon: "🎨",
+  },
+
+  {
+    category: "Backend & Database Systems",
+    items: [
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "MySQL",
+      "Firebase",
+      "REST APIs",
+      "Authentication Systems"
+    ],
+    icon: "⚙️",
+  },
+
+  {
+    category: "AI, Automation & Integrations",
+    items: [
+      "AI Chatbots",
+      "WhatsApp Automation",
+      "Payment Gateway Integration",
+      "Workflow Automation",
+      "OpenAI APIs",
+      "Real-time Systems"
+    ],
+    icon: "🤖",
+  },
+
+  {
+    category: "Cloud, SEO & Deployment",
+    items: [
+      "Docker",
+      "AWS / VPS Hosting",
+      "Vercel Deployment",
+      "SEO Optimization",
+      "Performance Optimization",
+      "Analytics Integration"
+    ],
+    icon: "🚀",
+  },
+];
 
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
         <h3 className="text-2xl md:text-3xl font-bold text-[#1E3A8A] mb-2">Tech Excellence</h3>
         <div className="w-16 h-1 bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] rounded-full mb-4" />
+        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#1E40AF]">
+  Modern Tech Stack
+</span>
+        
         <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-          We build scalable, high‑performance digital products using modern full‑stack technologies.
+          We build scalable SaaS platforms, AI-powered solutions, modern websites, dashboards, and automation systems using industry-leading technologies.
         </p>
       </div>
+      
 
       <div className="grid grid-cols-1 gap-4">
         {techGroups.map((group) => (
@@ -343,6 +380,7 @@ const LeftColumn = () => {
               <span className="text-lg">{group.icon}</span>
               <h4 className="font-semibold text-[#1E40AF]">{group.category}</h4>
             </div>
+            
             <div className="flex flex-wrap gap-2">
               {group.items.map((item) => (
                 <span

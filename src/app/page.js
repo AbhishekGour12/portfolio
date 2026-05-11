@@ -5,6 +5,7 @@ import ProjectSection from "./Home/ProjectSection";
 import ServiceSection from "./Home/ServiceSection";
 import SkillsSection from "./Home/SkillsSection";
 import TestimonialsSection from "./Home/TestimonialSection";
+import ProblemSolutionSection from "./Home/ProblemSolutionSection";
 
 export default function Home() {
   return (
@@ -12,8 +13,10 @@ export default function Home() {
    <HeroSection/>
    <Logo/>
    <DemoVideoSection/>
-   <SkillsSection/>
+   <ProblemSolutionSection/>
    <ProjectSection/>
+   <SkillsSection/>
+   
    <ServiceSection/>
    <TestimonialsSection/>
   

@@ -412,11 +412,11 @@ const HeroSection = () => {
             </motion.div>
 
             {/* Main Heading */}
-            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 leading-[1.15]">
-              We Build Smart Digital
+            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl font-bold tracking-tight text-gray-900 leading-[1.15]">
+              We Build Scalable Websites, 
               <br />
               <span className="bg-gradient-to-r from-[#1E40AF] via-[#4338CA] to-[#60A5FA] bg-clip-text text-transparent animate-gradient-text">
-                Products Powered by Modern AI
+                SaaS Platforms & AI Solutions
               </span>
             </motion.h1>
 
@@ -435,7 +435,7 @@ const HeroSection = () => {
 
             {/* Description */}
             <motion.p variants={itemVariants} className="text-base sm:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-xl  rounded-lg p-4 ">
-              We help businesses scale with modern web applications, AI-powered solutions, automation systems, and high-performance digital experiences designed for the future.
+             We help startups, businesses, and growing brands build modern web applications, AI-powered systems, scalable SaaS products, and high-performance digital experiences.
             </motion.p>
 
             {/* Trust Tags */}

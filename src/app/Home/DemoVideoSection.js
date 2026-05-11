@@ -21,10 +21,10 @@ const DemoVideoSection = () => {
 
   // Trust points
   const trustPoints = [
-  { text: "Custom Web & SaaS Development", icon: <CheckCircle2 size={18} /> },
-  { text: "SEO-Optimized & Fast Performance", icon: <CheckCircle2 size={18} /> },
-  { text: "Modern UI/UX & Responsive Design", icon: <CheckCircle2 size={18} /> },
-  { text: "Secure, Scalable Architecture", icon: <CheckCircle2 size={18} /> },
+  { text: "Custom SaaS & Web Application Development", icon: <CheckCircle2 size={18} /> },
+  { text: "AI-Powered Business Solutions", icon: <CheckCircle2 size={18} /> },
+  { text: "SEO-Optimized High Performance Websites", icon: <CheckCircle2 size={18} /> },
+  { text: "Scalable Cloud & Automation Systems", icon: <CheckCircle2 size={18} /> },
 ];
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });

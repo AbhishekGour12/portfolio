@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Abhi Services | Web Development, SaaS & Digital Solutions",
+  title: "Abhi Services — Web Development, SaaS & AI Solutions Company",
   description:
     "Abhi Services is a modern digital agency offering web development, SaaS solutions, UI/UX design, and scalable applications. We build high-performance, client-focused digital products.",
   
