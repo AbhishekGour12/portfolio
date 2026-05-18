@@ -7,6 +7,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { ChevronRight, Sparkles, Zap, Shield, Award, MessageCircle, Phone, Mail } from "lucide-react";
 
+
 const PricingPage = () => {
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });

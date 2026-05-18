@@ -6,7 +6,7 @@ import { FaCheckCircle, FaChartLine, FaRocket, FaShieldAlt, FaAward } from "reac
 import { Cpu, Zap, Layout, Sparkles } from "lucide-react";
 import Image from "next/image";
 
-// ========== Animated Counter Component ==========
+// ========== Animated Counter Component (unchanged) ==========
 const AnimatedCounter = ({ target, suffix = "", duration = 1.5 }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -95,7 +95,6 @@ const HeroSection = () => {
   const rightCardY = useTransform(scrollY, [0, 500], [0, 40]);
 
   const statsData = [
-  
     { icon: FaChartLine, label: "Retention", value: 98, suffix: "%" },
     { icon: FaShieldAlt, label: "Success Rate", value: 99, suffix: "%" },
   ];
@@ -117,7 +116,7 @@ const HeroSection = () => {
     },
   };
 
-  // Particles (reduced opacity, soft glow)
+  // Particles (unchanged)
   const [particles, setParticles] = useState([]);
   const [isClient, setIsClient] = useState(false);
 
@@ -138,7 +137,7 @@ const HeroSection = () => {
     setParticles(newParticles);
   }, []);
 
-  // ========== Enhanced Vertical Carousel (better card styling) ==========
+  // ========== OPTIMIZED VERTICAL CAROUSEL (consistent speed on all devices) ==========
   const VerticalCarousel = React.memo(({ items }) => {
     const [duplicatedItems, setDuplicatedItems] = useState([]);
     const containerRef = useRef(null);
@@ -155,10 +154,15 @@ const HeroSection = () => {
       setDuplicatedItems([...items, ...items, ...items]);
     }, [items]);
 
+    // Use a fixed speed of 60px per second for smooth, consistent movement
+    const SCROLL_SPEED = 60; // pixels per second
+
     useAnimationFrame((t, delta) => {
       if (!autoScrollActive.current || isHovered || isDragging) return;
-      const step = (40 * delta) / 1000; // slightly faster for better flow
+      // Convert delta (ms) to seconds
+      const step = (SCROLL_SPEED * delta) / 1000;
       let newY = y.get() - step;
+      // Wrap seamlessly
       if (newY <= -singleSetHeight * 2) newY += singleSetHeight;
       else if (newY > 0) newY = -singleSetHeight;
       y.set(newY);
@@ -171,7 +175,7 @@ const HeroSection = () => {
       autoScrollTimeout.current = setTimeout(() => {
         autoScrollActive.current = true;
       }, 2000);
-      let newY = y.get() + e.deltaY * 0.6;
+      let newY = y.get() + e.deltaY * 0.8;
       if (newY <= -singleSetHeight * 2) newY += singleSetHeight;
       else if (newY > 0) newY = -singleSetHeight;
       y.set(newY);
@@ -199,8 +203,7 @@ const HeroSection = () => {
       <div
         className="relative overflow-hidden h-[450px] sm:h-[500px] md:h-[540px] cursor-grab active:cursor-grabbing"
         onWheel={handleWheel}
-        
-        
+       
       >
         <motion.div
           ref={containerRef}
@@ -229,6 +232,8 @@ const HeroSection = () => {
                     height={120}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
+                    sizes="(max-width: 768px) 100px, 140px"
+                    quality={75}
                   />
                 </div>
                 <div className="w-2/3 p-4 flex flex-col justify-between">
@@ -257,25 +262,24 @@ const HeroSection = () => {
 
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-      
-      {/* ========== 1. BACKGROUND IMAGE (soft, cinematic) ========== */}
+      {/* Background image – replaced with a local optimized version if possible, else keep external */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('/hero_bg.png')` }}
       />
       
-      {/* ========== 2. LAYERED GRADIENT OVERLAY (left solid → right transparent) ========== */}
+      {/* Overlays (unchanged) */}
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-white via-white/80 to-transparent" />
-      {/* Additional soft radial glow behind right content to separate carousel */}
       <div className="absolute top-0 right-0 bottom-0 w-1/2 bg-gradient-to-l from-[#60A5FA]/10 via-transparent to-transparent" />
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#60A5FA]/20 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/50 to-transparent" />
       
-      {/* Very subtle noise texture for premium feel */}
+      {/* Noise texture (kept light) */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.015] mix-blend-multiply" 
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat" }} 
       />
 
+      {/* Global animations (same as before) */}
       <style jsx global>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
@@ -330,7 +334,7 @@ const HeroSection = () => {
         }
       `}</style>
 
-      {/* Grid pattern - extremely subtle */}
+      {/* Grid pattern (unchanged) */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.02] z-0"
         style={{
@@ -339,7 +343,7 @@ const HeroSection = () => {
         }}
       />
 
-      {/* Animated floating blobs */}
+      {/* Animated blobs (unchanged) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <motion.div
           className="absolute -top-40 -right-20 w-80 h-80 bg-blue-300/15 rounded-full blur-3xl"
@@ -354,15 +358,13 @@ const HeroSection = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#60A5FA]/5 rounded-full blur-3xl" />
       </div>
 
-      {/* Floating orbs */}
+      {/* Floating orbs & light streaks (unchanged) */}
       <div className="absolute top-[20%] left-[15%] w-40 h-40 rounded-full bg-blue-500/5 blur-2xl float-orb pointer-events-none" />
       <div className="absolute bottom-[30%] right-[10%] w-56 h-56 rounded-full bg-indigo-400/5 blur-2xl float-orb pointer-events-none" style={{ animationDelay: "-5s" }} />
-
-      {/* Light streaks */}
       <div className="absolute top-[10%] left-0 w-64 h-px bg-gradient-to-r from-transparent via-[#60A5FA]/30 to-transparent light-streak pointer-events-none" />
       <div className="absolute bottom-[20%] right-0 w-96 h-px bg-gradient-to-r from-transparent via-[#1E40AF]/20 to-transparent light-streak pointer-events-none" style={{ animationDelay: "3s" }} />
 
-      {/* Ambient particles */}
+      {/* Particles (unchanged) */}
       {isClient && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           {particles.map((particle) => (
@@ -398,20 +400,18 @@ const HeroSection = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24 xl:py-28">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
-          {/* ========== LEFT COLUMN ========== */}
+          {/* LEFT COLUMN (unchanged) */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             className="space-y-7 text-center lg:text-left"
           >
-            {/* Badge */}
             <motion.div variants={itemVariants} className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-1.5 border border-blue-100 shadow-sm mx-auto lg:mx-0 w-fit">
               <Sparkles className="w-4 h-4 text-[#1E40AF]" />
               <span className="text-sm font-medium text-[#1E3A8A]">AI-Powered Digital Solutions</span>
             </motion.div>
 
-            {/* Main Heading */}
             <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl font-bold tracking-tight text-gray-900 leading-[1.15]">
               We Build Scalable Websites, 
               <br />
@@ -420,7 +420,6 @@ const HeroSection = () => {
               </span>
             </motion.h1>
 
-            {/* Tech tagline */}
             <motion.div variants={itemVariants} className="flex flex-wrap gap-2 justify-center lg:justify-start">
               <div className="inline-flex gap-2 items-center text-xs font-mono font-semibold text-[#1E40AF] bg-blue-50/60 px-3 py-1.5 rounded-full">
                 <Cpu className="w-3 h-3" /> AI
@@ -433,22 +432,19 @@ const HeroSection = () => {
               </div>
             </motion.div>
 
-            {/* Description */}
-            <motion.p variants={itemVariants} className="text-base sm:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-xl  rounded-lg p-4 ">
-             We help startups, businesses, and growing brands build modern web applications, AI-powered systems, scalable SaaS products, and high-performance digital experiences.
+            <motion.p variants={itemVariants} className="text-base sm:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-xl rounded-lg p-4">
+              We help startups, businesses, and growing brands build modern web applications, AI-powered systems, scalable SaaS products, and high-performance digital experiences.
             </motion.p>
 
-            {/* Trust Tags */}
             <motion.div variants={itemVariants} className="flex flex-wrap gap-3 justify-center lg:justify-start">
               {["AI Integrations", "Smart Automation", "Scalable Architecture", "Enterprise UI/UX"].map((tag, i) => (
-                <span key={i} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full  backdrop-blur-lg border border-gray-200/80 text-gray-700 shadow-sm hover:border-blue-300 transition-all">
+                <span key={i} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-lg border border-gray-200/80 text-gray-700 shadow-sm hover:border-blue-300 transition-all">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                   {tag}
                 </span>
               ))}
             </motion.div>
 
-            {/* CTA Buttons */}
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 pt-2 justify-center lg:justify-start">
               <motion.a
                 href="/contact"
@@ -474,15 +470,14 @@ const HeroSection = () => {
               </Link>
             </motion.div>
 
-            {/* Stats */}
-            <motion.div variants={itemVariants} className="pt-5 flex flex-wrap gap-6 items-center justify-center lg:justify-start max-sm:border border-gray-200/60 max-sm:backdrop-blur-xl  rounded-lg p-4">
+            <motion.div variants={itemVariants} className="pt-5 flex flex-wrap gap-6 items-center justify-center lg:justify-start max-sm:border border-gray-200/60 max-sm:backdrop-blur-xl rounded-lg p-4">
               {statsData.map((stat, idx) => (
                 <StatsItem key={idx} icon={stat.icon} label={stat.label} value={stat.value} suffix={stat.suffix} />
               ))}
             </motion.div>
           </motion.div>
 
-          {/* ========== RIGHT COLUMN – Vertical Carousel (elevated) ========== */}
+          {/* RIGHT COLUMN – Vertical Carousel */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -490,10 +485,7 @@ const HeroSection = () => {
             style={{ y: rightCardY }}
             className="relative flex justify-center mt-8 lg:mt-0 z-10"
           >
-            {/* Glow behind carousel */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#60A5FA]/20 via-[#1E40AF]/10 to-transparent blur-2xl rounded-3xl" />
-            
-            {/* Glass container */}
             <div className="relative backdrop-blur-xl bg-white/70 border border-white/60 rounded-3xl shadow-2xl p-2 sm:p-3 overflow-hidden z-10 max-w-md lg:max-w-lg">
               <div className="absolute top-0 left-0 right-0 h-14 bg-gradient-to-b from-white/90 to-transparent rounded-t-3xl pointer-events-none z-10" />
               <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-white/90 to-transparent rounded-b-3xl pointer-events-none z-10" />
@@ -503,7 +495,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll Indicator (unchanged) */}
       <motion.div
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
         animate={{ y: [0, 8, 0] }}
