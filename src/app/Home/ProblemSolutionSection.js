@@ -97,9 +97,10 @@ const ProblemSolutionSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
+      className="max-md:hidden relative w-full overflow-hidden py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
       style={{
         background: "linear-gradient(135deg, #f0f9ff 0%, #ffffff 60%, #e0f2fe 100%)",
+        
       }}
     >
       {/* Animated blobs & grid */}

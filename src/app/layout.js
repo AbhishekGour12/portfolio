@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
+import ScrollToTop from "./Components/ClientLayout";
+import InitialLoader from "./Components/IntialLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,9 +87,12 @@ export default function RootLayout({ children }) {
     <title>Abhi Services</title>
   </head>
       <body className="min-h-full flex flex-col">
+        <InitialLoader> 
+        <ScrollToTop/>
         <Navbar/>
         {children}
         <Footer/>
+        </InitialLoader>
         </body>
     </html>
   );
