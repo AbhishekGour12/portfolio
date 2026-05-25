@@ -160,7 +160,7 @@ const VerticalCarousel = React.memo(() => {
                   priority={idx < 3}
                   loading={idx >= 3 ? "lazy" : undefined}
                   sizes="(max-width: 480px) 80px, 120px"
-                  quality={70}
+                  quality={75}
                 />
               </div>
               <div className="w-2/3 p-2 xs:p-3 flex flex-col justify-between">

@@ -67,7 +67,7 @@ const problemSolutionPairs = [
 ];
 
 const ProblemSolutionSection = () => {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef(null); // ✅ fixed: useRef instead of useState
   const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -81,9 +81,10 @@ const ProblemSolutionSection = () => {
   // Progress for connector line (0 to 1)
   const lineProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
-  // Automatic index change based on scroll (mobile fallback)
+  // Automatic index change based on scroll
   useEffect(() => {
-    const unsubscribe = lineProgress.onChange((value) => {
+    // ✅ use the new .on("change", callback) API
+    const unsubscribe = lineProgress.on("change", (value) => {
       const newIndex = Math.min(
         Math.floor(value * problemSolutionPairs.length),
         problemSolutionPairs.length - 1
@@ -96,7 +97,7 @@ const ProblemSolutionSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 max-md:hidden"
+      className="relative w-full overflow-hidden py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
       style={{
         background: "linear-gradient(135deg, #f0f9ff 0%, #ffffff 60%, #e0f2fe 100%)",
       }}
@@ -113,7 +114,7 @@ const ProblemSolutionSection = () => {
           animate={{ x: [0, -50, 0], y: [0, -40, 0] }}
           transition={{ duration: 22, repeat: Infinity, repeatType: "reverse" }}
         />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.02]" />
+        <div className="absolute inset-0  bg-center opacity-[0.02]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -173,7 +174,6 @@ const ProblemSolutionSection = () => {
                     )}
                   </div>
                 </div>
-                {/* Glitch effect when hovered */}
                 {hoveredIndex === idx && (
                   <motion.div
                     className="absolute inset-0 rounded-2xl pointer-events-none"
@@ -188,16 +188,11 @@ const ProblemSolutionSection = () => {
 
           {/* CENTER: Animated Connector (Desktop only) */}
           <div className="hidden lg:block w-24 relative">
-            {/* Vertical line */}
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#60A5FA]/30 via-[#1E40AF] to-[#60A5FA]/30 rounded-full transform -translate-x-1/2" />
-            
-            {/* Animated glow that travels */}
             <motion.div
               className="absolute left-1/2 w-2 h-2 rounded-full bg-[#60A5FA] shadow-[0_0_20px_#60A5FA] transform -translate-x-1/2"
               style={{ top: useTransform(lineProgress, [0, 1], ["5%", "95%"]) }}
             />
-            
-            {/* Energy particles along line */}
             {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
@@ -241,7 +236,6 @@ const ProblemSolutionSection = () => {
                     )}
                   </div>
                 </div>
-                {/* Glow on active */}
                 {activeIndex === idx && (
                   <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#60A5FA]/20 to-transparent opacity-50 blur-xl pointer-events-none" />
                 )}

@@ -97,7 +97,7 @@ const ServiceClient = () => {
       <div className="relative min-h-screen w-full overflow-x-hidden bg-white">
         {/* Background blur blobs unchanged */}
         <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.02]" />
+          <div className="absolute inset-0 bg-center opacity-[0.02]" />
           <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-blue-100/40 blur-[120px]" />
           <div className="absolute bottom-[-30%] right-[-20%] w-[70%] h-[70%] rounded-full bg-blue-200/30 blur-[120px]" />
           <div className="absolute top-[40%] right-[10%] w-[50%] h-[50%] bg-indigo-100/30 blur-[100px]" />

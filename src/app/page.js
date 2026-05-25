@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // Normal Import for Hero Section (important for first paint)
 import HeroSection from "./Home/HeroSection";
 
+
 // Lazy Components
 const Logo = lazy(() => import("./Home/Logo"));
 const DemoVideoSection = lazy(() => import("./Home/DemoVideoSection"));
@@ -13,7 +14,7 @@ const ServiceSection = lazy(() => import("./Home/ServiceSection"));
 const SkillsSection = lazy(() => import("./Home/SkillsSection"));
 const TestimonialsSection = lazy(() => import("./Home/TestimonialSection"));
 const ProblemSolutionSection = lazy(() => import("./Home/ProblemSolutionSection"));
-
+const FAQSection = lazy(() => import("./Home/FAQSection"))
 // ========== Premium Animated Page Loader ==========
 const PageLoader = () => {
   return (
@@ -133,6 +134,7 @@ export default function Home() {
             <SkillsSection />
             <ServiceSection />
             <TestimonialsSection />
+            <FAQSection/>
           </Suspense>
         </>
       )}

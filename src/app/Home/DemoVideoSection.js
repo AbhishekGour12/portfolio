@@ -89,7 +89,7 @@ const DemoVideoSection = () => {
           animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 15, repeat: Infinity }}
         />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.02]" />
+        <div className="absolute inset-0  bg-center opacity-[0.02]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">

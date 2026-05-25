@@ -118,7 +118,7 @@ const ContactClient = () => {
 
       <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white py-20 px-4 sm:px-6 lg:px-8">
         {/* Background Grid & Blobs */}
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.02] pointer-events-none" />
+        <div className="absolute inset-0  bg-center opacity-[0.02] pointer-events-none" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
             className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-blue-200/40 blur-[120px]"
