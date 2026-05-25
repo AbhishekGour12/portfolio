@@ -80,78 +80,88 @@ const expertiseItems = [
   },
 ];
 
-// ========== SMOOTH VERTICAL CAROUSEL ==========
-// Uses JS-measured pixel heights so the scroll distance is exact — no gap math drift.
+// ========== ULTRA-SMOOTH VERTICAL CAROUSEL (GPU-accelerated) ==========
 const VerticalCarousel = React.memo(() => {
   const trackRef = useRef(null);
   const animRef = useRef(null);
-  const offsetRef = useRef(0);   // current pixel scroll position
-  const originRef = useRef(null); // measured height of one "set" of items
+  const offsetRef = useRef(0);          // current pixel scroll (Y)
+  const setHeightRef = useRef(0);       // height of one complete set of items
+  const speed = 48;                     // px/sec — consistent across all devices
 
-  // Build 3× list once for seamless wrap
+  // Build tripled items list once
   const tripled = [...expertiseItems, ...expertiseItems, ...expertiseItems];
 
-  // Speed in px/second — consistent across all screen sizes
-  const SPEED = 48;
-
-  const measure = useCallback(() => {
+  // Measure the exact height of one set (including gaps)
+  const measureSetHeight = useCallback(() => {
     if (!trackRef.current) return;
-    // Height of first N items (one set), including gaps
     const items = trackRef.current.querySelectorAll(".carousel-item");
     const n = expertiseItems.length;
     if (items.length < n) return;
 
-    // Sum up the rendered height + gap for the first set
     let total = 0;
     const gap = parseFloat(getComputedStyle(trackRef.current).gap) || 0;
     for (let i = 0; i < n; i++) {
       total += items[i].getBoundingClientRect().height;
     }
-    // Add gaps between items in one set (n gaps between n items = n-1 inner + 1 to next set)
-    total += gap * n; // we include the gap after the last item so wrapping is seamless
-    originRef.current = total;
+    // Add gaps: there are n gaps between n items (including after last to wrap seamlessly)
+    total += gap * n;
+    setHeightRef.current = total;
   }, []);
 
+  // Re-measure on mount and resize (debounced for performance)
   useEffect(() => {
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [measure]);
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        measureSetHeight();
+      }, 150);
+    };
+    measureSetHeight();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, [measureSetHeight]);
 
+  // Animation loop
   useEffect(() => {
-    let lastTime = null;
+    let lastTimestamp = null;
 
-    const tick = (timestamp) => {
-      if (!lastTime) lastTime = timestamp;
-      const delta = timestamp - lastTime;
-      lastTime = timestamp;
+    const animate = (now) => {
+      if (!lastTimestamp) lastTimestamp = now;
+      const delta = Math.min(100, now - lastTimestamp); // cap to avoid huge jumps
+      lastTimestamp = now;
 
-      if (originRef.current && trackRef.current) {
-        offsetRef.current += (SPEED * delta) / 1000;
+      if (setHeightRef.current > 0) {
+        offsetRef.current += (speed * delta) / 1000;
 
-        // Seamless wrap: when we've scrolled exactly one "set" height, reset to 0
-        if (offsetRef.current >= originRef.current) {
-          offsetRef.current -= originRef.current;
+        // Seamless wrap: when we've scrolled exactly one set height, reset to 0
+        if (offsetRef.current >= setHeightRef.current) {
+          offsetRef.current -= setHeightRef.current;
         }
 
-        // Apply via transform — no layout recalc, pure compositor
-        trackRef.current.style.transform = `translate3d(0, -${offsetRef.current}px, 0)`;
+        // Apply transform with GPU layer – no layout recalc
+        if (trackRef.current) {
+          trackRef.current.style.transform = `translate3d(0, -${offsetRef.current}px, 0)`;
+        }
       }
 
-      animRef.current = requestAnimationFrame(tick);
+      animRef.current = requestAnimationFrame(animate);
     };
 
-    animRef.current = requestAnimationFrame(tick);
+    animRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animRef.current);
-  }, []);
+  }, [speed]);
 
   return (
-    <div className="relative overflow-hidden h-[360px] xs:h-[420px] sm:h-[500px] md:h-[540px]">
-      {/* Top & bottom fade masks */}
-      <div className="absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-white/90 to-transparent z-10 pointer-events-none rounded-t-3xl" />
-      <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-white/90 to-transparent z-10 pointer-events-none rounded-b-3xl" />
+    <div className="relative overflow-hidden h-[360px] xs:h-[400px] sm:h-[480px] md:h-[540px]">
+      {/* Gradient fade masks (soft on mobile, still premium) */}
+      <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-white/90 to-transparent z-10 pointer-events-none rounded-t-3xl" />
+      <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-white/90 to-transparent z-10 pointer-events-none rounded-b-3xl" />
 
-      {/* Track — will-change tells browser to promote to its own GPU layer */}
+      {/* Track – will-change forces GPU layer */}
       <div
         ref={trackRef}
         className="flex flex-col gap-3 will-change-transform"
@@ -160,8 +170,8 @@ const VerticalCarousel = React.memo(() => {
         {tripled.map((item, idx) => (
           <div
             key={`${item.title}-${idx}`}
-            className="carousel-item group bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl shadow-md overflow-hidden shrink-0"
-            style={{ height: "110px" }}
+            className="carousel-item group bg-white/80 backdrop-blur-md border border-white/50 rounded-2xl shadow-md overflow-hidden shrink-0"
+            style={{ height: "clamp(90px, 20vw, 110px)" }} // responsive height
           >
             <div className="flex flex-row h-full">
               <div className="w-1/3 relative overflow-hidden bg-gray-100">
@@ -172,17 +182,19 @@ const VerticalCarousel = React.memo(() => {
                   className="object-cover"
                   priority={idx < 3}
                   loading={idx >= 3 ? "lazy" : undefined}
-                  sizes="(max-width: 480px) 90px, 130px"
+                  sizes="(max-width: 480px) 80px, 120px"
                   quality={65}
                 />
               </div>
-              <div className="w-2/3 p-3 flex flex-col justify-between">
+              <div className="w-2/3 p-2 xs:p-3 flex flex-col justify-between">
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-gray-800 line-clamp-1">{item.title}</h4>
-                  <p className="text-[10px] sm:text-xs text-gray-500 mt-1 line-clamp-2 leading-snug">{item.description}</p>
+                  <h4 className="text-xs xs:text-sm font-bold text-gray-800 line-clamp-1">{item.title}</h4>
+                  <p className="text-[10px] xs:text-xs text-gray-500 mt-0.5 xs:mt-1 line-clamp-2 leading-snug">
+                    {item.description}
+                  </p>
                 </div>
-                <div className="flex justify-end">
-                  <span className="text-blue-600 text-xs font-medium inline-flex items-center gap-1">
+                <div className="flex justify-end mt-1">
+                  <span className="text-blue-600 text-[10px] xs:text-xs font-medium inline-flex items-center gap-1">
                     Explore <span>→</span>
                   </span>
                 </div>
@@ -204,8 +216,14 @@ const HeroSection = () => {
   const [particles, setParticles] = useState([]);
   const [isClient, setIsClient] = useState(false);
 
+  // Only generate particles on client – disable on mobile for performance
   useEffect(() => {
     setIsClient(true);
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      setParticles([]);
+      return;
+    }
     setParticles(
       Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -216,7 +234,7 @@ const HeroSection = () => {
         amplitudeX: 10 + Math.random() * 20,
         amplitudeY: 10 + Math.random() * 20,
         size: 1.5 + Math.random() * 3,
-        opacity: 0.15 + Math.random() * 0.2,
+        opacity: 0.12,
         color: Math.random() > 0.6 ? "#60A5FA" : "#1E40AF",
       }))
     );
@@ -248,36 +266,38 @@ const HeroSection = () => {
           background-size: 200% auto;
           animation: gradientShift 6s ease infinite;
         }
+        /* Disable heavy backdrop blur on small screens for performance */
+        @media (max-width: 640px) {
+          .carousel-item {
+            backdrop-filter: blur(4px);
+          }
+        }
       `}</style>
 
-      {/* Backgrounds */}
-      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-40 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url('/hero_bg.png')` }} />
+      {/* Background layers (optimized) */}
+      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-30 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url('/hero_bg.png')` }} />
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
-      <div className="absolute top-0 right-0 bottom-0 w-full sm:w-1/2 bg-gradient-to-l from-[#60A5FA]/10 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute top-1/4 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-[#60A5FA]/15 rounded-full blur-3xl pointer-events-none" />
-      <div
-        className="absolute inset-0 z-0 pointer-events-none opacity-[0.012] mix-blend-multiply"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }}
-      />
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.015] z-0"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10h40M10 0v40' stroke='%231E40AF' stroke-width='0.5' fill='none' /%3E%3C/svg%3E")` }}
-      />
+      <div className="absolute top-0 right-0 bottom-0 w-full sm:w-1/2 bg-gradient-to-l from-[#60A5FA]/5 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-[#60A5FA]/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Floating blobs */}
+      {/* Subtle noise + grid (performance: low opacity) */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.008] mix-blend-multiply" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }} />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.01] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10h40M10 0v40' stroke='%231E40AF' stroke-width='0.4' fill='none' /%3E%3C/svg%3E")` }} />
+
+      {/* Floating blobs (reduced motion on mobile) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <motion.div className="absolute -top-40 -right-20 w-72 h-72 bg-blue-300/10 rounded-full blur-3xl" animate={{ x: [0, 30, 0], y: [0, 20, 0] }} transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }} />
-        <motion.div className="absolute -bottom-32 -left-20 w-72 h-72 bg-indigo-200/10 rounded-full blur-3xl" animate={{ x: [0, -20, 0], y: [0, -20, 0] }} transition={{ duration: 24, repeat: Infinity, repeatType: "reverse" }} />
+        <motion.div className="absolute -top-40 -right-20 w-72 h-72 bg-blue-300/8 rounded-full blur-3xl" animate={{ x: [0, 30, 0], y: [0, 20, 0] }} transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }} />
+        <motion.div className="absolute -bottom-32 -left-20 w-72 h-72 bg-indigo-200/8 rounded-full blur-3xl" animate={{ x: [0, -20, 0], y: [0, -20, 0] }} transition={{ duration: 24, repeat: Infinity, repeatType: "reverse" }} />
       </div>
 
-      {/* Particles (desktop only) */}
+      {/* Particles – only on desktop */}
       {isClient && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 max-sm:hidden">
           {particles.map((p) => (
             <motion.div
               key={p.id}
               className="absolute rounded-full transform-gpu"
-              style={{ left: `${p.initialX}%`, top: `${p.initialY}%`, width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 ${p.size * 1.2}px ${p.color}`, opacity: p.opacity }}
+              style={{ left: `${p.initialX}%`, top: `${p.initialY}%`, width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 ${p.size * 1}px ${p.color}`, opacity: p.opacity }}
               animate={{ x: [0, p.amplitudeX, -p.amplitudeX * 0.5, 0], y: [0, -p.amplitudeY, p.amplitudeY * 0.6, 0] }}
               transition={{ duration: p.duration, repeat: Infinity, repeatType: "reverse", delay: p.delay, ease: "easeInOut" }}
             />
@@ -285,11 +305,11 @@ const HeroSection = () => {
         </div>
       )}
 
-      {/* Main Layout */}
+      {/* Main content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 xs:px-5 sm:px-6 lg:px-10 py-10 xs:py-12 sm:py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-8 xs:gap-10 lg:gap-16 items-center">
 
-          {/* Left: Text */}
+          {/* Left column */}
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5 xs:space-y-6 text-center lg:text-left">
             <motion.div variants={itemVariants} className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-3.5 py-1.5 border border-blue-100 shadow-sm mx-auto lg:mx-0 w-fit">
               <Sparkles className="w-3.5 h-3.5 text-[#1E40AF]" />
@@ -297,8 +317,7 @@ const HeroSection = () => {
             </motion.div>
 
             <motion.h1 variants={itemVariants} className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2] xs:leading-[1.15]">
-              We Build Scalable Websites,
-              <br className="max-xs:hidden" />
+              We Build Scalable Websites,<br className="max-xs:hidden" />
               <span className="bg-gradient-to-r from-[#1E40AF] via-[#4338CA] to-[#60A5FA] bg-clip-text text-transparent animate-gradient-text block mt-1">
                 SaaS Platforms & AI Solutions
               </span>
@@ -329,7 +348,7 @@ const HeroSection = () => {
               ))}
             </motion.div>
 
-            {/* CTAs */}
+            {/* Buttons */}
             <motion.div variants={itemVariants} className="flex flex-col xs:flex-row gap-3 pt-1 justify-center lg:justify-start px-4 xs:px-0">
               <motion.a
                 href="/contact"
@@ -361,7 +380,7 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right: Carousel */}
+          {/* Right column – Carousel */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -369,12 +388,12 @@ const HeroSection = () => {
             style={{ y: isClient && window.innerWidth > 1024 ? rightCardY : 0 }}
             className="relative flex justify-center mt-4 lg:mt-0 z-10 w-full max-w-sm xs:max-w-md lg:max-w-lg mx-auto px-2 xs:px-0"
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-[#60A5FA]/15 via-[#1E40AF]/5 to-transparent blur-2xl rounded-3xl pointer-events-none" />
+            {/* Soft glow behind – disabled on mobile for performance */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#60A5FA]/10 via-[#1E40AF]/5 to-transparent blur-2xl rounded-3xl pointer-events-none max-sm:hidden" />
             <div className="relative w-full backdrop-blur-xl bg-white/60 border border-white/70 rounded-3xl shadow-xl p-2 sm:p-3 overflow-hidden z-10">
               <VerticalCarousel />
             </div>
           </motion.div>
-
         </div>
       </div>
     </section>
