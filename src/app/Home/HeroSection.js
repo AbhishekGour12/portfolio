@@ -80,98 +80,75 @@ const expertiseItems = [
   },
 ];
 
-// ========== ULTRA-SMOOTH VERTICAL CAROUSEL (GPU-accelerated) ==========
+// ========== PURE CSS VERTICAL CAROUSEL (GPU-accelerated) ==========
+// ========== PURE CSS VERTICAL CAROUSEL (FIXED INFINITE LOOP) ==========
 const VerticalCarousel = React.memo(() => {
   const trackRef = useRef(null);
-  const animRef = useRef(null);
-  const offsetRef = useRef(0);          // current pixel scroll (Y)
-  const setHeightRef = useRef(0);       // height of one complete set of items
-  const speed = 48;                     // px/sec — consistent across all devices
+  const [animationDuration, setAnimationDuration] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Build tripled items list once
-  const tripled = [...expertiseItems, ...expertiseItems, ...expertiseItems];
-
-  // Measure the exact height of one set (including gaps)
+  // Measure height of ONE SET of items (the original list)
   const measureSetHeight = useCallback(() => {
     if (!trackRef.current) return;
+    // We need the height of the first N items (expertiseItems length)
     const items = trackRef.current.querySelectorAll(".carousel-item");
     const n = expertiseItems.length;
-    if (items.length < n) return;
+    if (items.length < n * 2) return; // we have two copies
 
-    let total = 0;
+    let totalHeight = 0;
     const gap = parseFloat(getComputedStyle(trackRef.current).gap) || 0;
     for (let i = 0; i < n; i++) {
-      total += items[i].getBoundingClientRect().height;
+      totalHeight += items[i].getBoundingClientRect().height;
     }
-    // Add gaps: there are n gaps between n items (including after last to wrap seamlessly)
-    total += gap * n;
-    setHeightRef.current = total;
+    // Add gaps between items (n gaps, including after last to next set)
+    totalHeight += gap * n;
+
+    // Speed: 25px per second (smooth and not too fast)
+    const durationSec = totalHeight / 25;
+    setAnimationDuration(durationSec);
   }, []);
 
-  // Re-measure on mount and resize (debounced for performance)
   useEffect(() => {
-    let resizeTimer;
-    const handleResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        measureSetHeight();
-      }, 150);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
     measureSetHeight();
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", measureSetHeight);
     return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", measureSetHeight);
     };
   }, [measureSetHeight]);
 
-  // Animation loop
-  useEffect(() => {
-    let lastTimestamp = null;
-
-    const animate = (now) => {
-      if (!lastTimestamp) lastTimestamp = now;
-      const delta = Math.min(100, now - lastTimestamp); // cap to avoid huge jumps
-      lastTimestamp = now;
-
-      if (setHeightRef.current > 0) {
-        offsetRef.current += (speed * delta) / 1000;
-
-        // Seamless wrap: when we've scrolled exactly one set height, reset to 0
-        if (offsetRef.current >= setHeightRef.current) {
-          offsetRef.current -= setHeightRef.current;
-        }
-
-        // Apply transform with GPU layer – no layout recalc
-        if (trackRef.current) {
-          trackRef.current.style.transform = `translate3d(0, -${offsetRef.current}px, 0)`;
-        }
-      }
-
-      animRef.current = requestAnimationFrame(animate);
-    };
-
-    animRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animRef.current);
-  }, [speed]);
+  // Two copies for seamless loop (move by -50%)
+  const doubled = [...expertiseItems, ...expertiseItems];
 
   return (
     <div className="relative overflow-hidden h-[360px] xs:h-[400px] sm:h-[480px] md:h-[540px]">
-      {/* Gradient fade masks (soft on mobile, still premium) */}
-      <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-white/90 to-transparent z-10 pointer-events-none rounded-t-3xl" />
-      <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-white/90 to-transparent z-10 pointer-events-none rounded-b-3xl" />
+      {/* Gradient fade masks */}
+      <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-white/80 to-transparent z-10 pointer-events-none rounded-t-3xl" />
+      <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-white/80 to-transparent z-10 pointer-events-none rounded-b-3xl" />
 
-      {/* Track – will-change forces GPU layer */}
+      {/* Track with CSS infinite scroll */}
       <div
         ref={trackRef}
         className="flex flex-col gap-3 will-change-transform"
-        style={{ transform: "translate3d(0,0,0)" }}
+        style={{
+          transform: "translate3d(0,0,0)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          animation: animationDuration > 0 ? `scrollUp ${animationDuration}s linear infinite` : "none",
+        }}
       >
-        {tripled.map((item, idx) => (
+        {doubled.map((item, idx) => (
           <div
             key={`${item.title}-${idx}`}
-            className="carousel-item group bg-white/80 backdrop-blur-md border border-white/50 rounded-2xl shadow-md overflow-hidden shrink-0"
-            style={{ height: "clamp(90px, 20vw, 110px)" }} // responsive height
+            className="carousel-item group bg-white/80 border border-white/50 rounded-2xl shadow-md overflow-hidden shrink-0"
+            style={{
+              height: isMobile ? "clamp(85px, 18vw, 100px)" : "clamp(90px, 20vw, 110px)",
+              backdropFilter: isMobile ? "blur(4px)" : "blur(8px)",
+              WebkitBackdropFilter: isMobile ? "blur(4px)" : "blur(8px)",
+            }}
           >
             <div className="flex flex-row h-full">
               <div className="w-1/3 relative overflow-hidden bg-gray-100">
@@ -183,7 +160,7 @@ const VerticalCarousel = React.memo(() => {
                   priority={idx < 3}
                   loading={idx >= 3 ? "lazy" : undefined}
                   sizes="(max-width: 480px) 80px, 120px"
-                  quality={65}
+                  quality={70}
                 />
               </div>
               <div className="w-2/3 p-2 xs:p-3 flex flex-col justify-between">
@@ -203,24 +180,49 @@ const VerticalCarousel = React.memo(() => {
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        @keyframes scrollUp {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(0, -50%, 0);
+          }
+        }
+        /* Apply animation with dynamic duration */
+        div[ref="${trackRef}"] {
+          animation: scrollUp ${animationDuration}s linear infinite;
+          will-change: transform;
+          backface-visibility: hidden;
+          transform: translateZ(0);
+        }
+        /* Pause on hover for desktop */
+        @media (hover: hover) and (min-width: 768px) {
+          div[ref="${trackRef}"]:hover {
+            animation-play-state: paused;
+          }
+        }
+      `}</style>
     </div>
   );
 });
 VerticalCarousel.displayName = "VerticalCarousel";
 
-// ========== HERO SECTION ==========
+// ========== HERO SECTION (optimized for mobile) ==========
 const HeroSection = () => {
   const { scrollY } = useScroll();
   const rightCardY = useTransform(scrollY, [0, 500], [0, 30]);
 
   const [particles, setParticles] = useState([]);
   const [isClient, setIsClient] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Only generate particles on client – disable on mobile for performance
   useEffect(() => {
     setIsClient(true);
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
+    const mobile = window.innerWidth < 768;
+    setIsMobile(mobile);
+    if (mobile) {
       setParticles([]);
       return;
     }
@@ -266,23 +268,25 @@ const HeroSection = () => {
           background-size: 200% auto;
           animation: gradientShift 6s ease infinite;
         }
-        /* Disable heavy backdrop blur on small screens for performance */
+        /* Reduce backdrop blur on mobile for performance */
         @media (max-width: 640px) {
           .carousel-item {
+            backdrop-filter: blur(4px);
+          }
+          .hero-panel {
             backdrop-filter: blur(4px);
           }
         }
       `}</style>
 
-      {/* Background layers (optimized) */}
-      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-30 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url('/hero_bg.png')` }} />
+      {/* Background layers (lighter on mobile) */}
+      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-20 sm:opacity-30 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url('/hero_bg.png')` }} />
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
       <div className="absolute top-0 right-0 bottom-0 w-full sm:w-1/2 bg-gradient-to-l from-[#60A5FA]/5 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute top-1/4 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-[#60A5FA]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-48 h-48 sm:w-96 sm:h-96 bg-[#60A5FA]/10 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
 
-      {/* Subtle noise + grid (performance: low opacity) */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.008] mix-blend-multiply" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }} />
-      <div className="absolute inset-0 pointer-events-none opacity-[0.01] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10h40M10 0v40' stroke='%231E40AF' stroke-width='0.4' fill='none' /%3E%3C/svg%3E")` }} />
+      {/* Subtle grid (reduce opacity on mobile) */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.008] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10h40M10 0v40' stroke='%231E40AF' stroke-width='0.4' fill='none' /%3E%3C/svg%3E")` }} />
 
       {/* Floating blobs (reduced motion on mobile) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -291,8 +295,8 @@ const HeroSection = () => {
       </div>
 
       {/* Particles – only on desktop */}
-      {isClient && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 max-sm:hidden">
+      {isClient && !isMobile && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           {particles.map((p) => (
             <motion.div
               key={p.id}
@@ -306,12 +310,12 @@ const HeroSection = () => {
       )}
 
       {/* Main content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 xs:px-5 sm:px-6 lg:px-10 py-10 xs:py-12 sm:py-16 lg:py-24">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 xs:px-5 sm:px-6 lg:px-10 py-8 xs:py-10 sm:py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-8 xs:gap-10 lg:gap-16 items-center">
 
           {/* Left column */}
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5 xs:space-y-6 text-center lg:text-left">
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-3.5 py-1.5 border border-blue-100 shadow-sm mx-auto lg:mx-0 w-fit">
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-3.5 py-1.5 border border-blue-100 shadow-sm mx-auto lg:mx-0 w-fit">
               <Sparkles className="w-3.5 h-3.5 text-[#1E40AF]" />
               <span className="text-xs sm:text-sm font-medium text-[#1E3A8A]">AI-Powered Digital Solutions</span>
             </motion.div>
@@ -335,13 +339,13 @@ const HeroSection = () => {
               </div>
             </motion.div>
 
-            <motion.p variants={itemVariants} className="text-sm sm:text-base md:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-md rounded-xl max-md:bg-white/40 max-md:p-3 max-md:border max-md:border-white/40">
+            <motion.p variants={itemVariants} className="text-sm sm:text-base md:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-sm rounded-xl max-md:bg-white/40 max-md:p-3 max-md:border max-md:border-white/40">
               We help startups, businesses, and growing brands build modern web applications, AI-powered systems, scalable SaaS products, and high-performance digital experiences.
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-wrap gap-2 justify-center lg:justify-start max-xs:px-2">
               {["AI Integrations", "Smart Automation", "Scalable Architecture", "Enterprise UI/UX"].map((tag, i) => (
-                <span key={i} className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-md border border-gray-200/80 text-gray-700 shadow-sm hover:border-blue-300 transition-all">
+                <span key={i} className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm border border-gray-200/80 text-gray-700 shadow-sm hover:border-blue-300 transition-all">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                   {tag}
                 </span>
@@ -373,24 +377,24 @@ const HeroSection = () => {
             </motion.div>
 
             {/* Stats */}
-            <motion.div variants={itemVariants} className="pt-3 flex gap-4 xs:gap-6 items-center justify-center lg:justify-start max-xs:border max-xs:border-gray-200/50 max-xs:backdrop-blur-md max-xs:bg-white/40 rounded-xl p-3 mx-4 xs:mx-0">
+            <motion.div variants={itemVariants} className="pt-3 flex gap-4 xs:gap-6 items-center justify-center lg:justify-start max-xs:border max-xs:border-gray-200/50 max-xs:backdrop-blur-sm max-xs:bg-white/40 rounded-xl p-3 mx-4 xs:mx-0">
               {statsData.map((stat, idx) => (
                 <StatsItem key={idx} icon={stat.icon} label={stat.label} value={stat.value} suffix={stat.suffix} />
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right column – Carousel */}
+          {/* Right column – Carousel (GPU accelerated) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            style={{ y: isClient && window.innerWidth > 1024 ? rightCardY : 0 }}
+            style={{ y: isClient && !isMobile && window.innerWidth > 1024 ? rightCardY : 0 }}
             className="relative flex justify-center mt-4 lg:mt-0 z-10 w-full max-w-sm xs:max-w-md lg:max-w-lg mx-auto px-2 xs:px-0"
           >
-            {/* Soft glow behind – disabled on mobile for performance */}
+            {/* Soft glow – hidden on mobile */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#60A5FA]/10 via-[#1E40AF]/5 to-transparent blur-2xl rounded-3xl pointer-events-none max-sm:hidden" />
-            <div className="relative w-full backdrop-blur-xl bg-white/60 border border-white/70 rounded-3xl shadow-xl p-2 sm:p-3 overflow-hidden z-10">
+            <div className="relative w-full backdrop-blur-md bg-white/60 border border-white/70 rounded-3xl shadow-xl p-2 sm:p-3 overflow-hidden z-10">
               <VerticalCarousel />
             </div>
           </motion.div>
