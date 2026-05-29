@@ -4,20 +4,22 @@ import { Suspense, lazy } from "react";
 
 // Normal Import for Hero Section
 import HeroSection from "./Home/HeroSection";
+import PageLoader from "./Components/PageLoader";
+import dynamic from "next/dynamic";
 
 // Lazy Components
-const Logo = lazy(() => import("./Home/Logo"));
-const DemoVideoSection = lazy(() => import("./Home/DemoVideoSection"));
-const ProjectSection = lazy(() => import("./Home/ProjectSection"));
-const ServiceSection = lazy(() => import("./Home/ServiceSection"));
-const SkillsSection = lazy(() => import("./Home/SkillsSection"));
-const TestimonialsSection = lazy(() =>
+const Logo = dynamic(() => import("./Home/Logo"), { ssr: false });
+const DemoVideoSection = dynamic(() => import("./Home/DemoVideoSection"), { ssr: false });
+const ProjectSection = dynamic(() => import("./Home/ProjectSection"), { ssr: false });
+const ServiceSection = dynamic(() => import("./Home/ServiceSection"), { ssr: false });
+const SkillsSection = dynamic(() => import("./Home/SkillsSection"), { ssr: false });
+const TestimonialsSection = dynamic(() =>
   import("./Home/TestimonialSection")
 );
-const ProblemSolutionSection = lazy(() =>
+const ProblemSolutionSection = dynamic(() =>
   import("./Home/ProblemSolutionSection")
 );
-const FAQSection = lazy(() => import("./Home/FAQSection"));
+const FAQSection = dynamic(() => import("./Home/FAQSection"), { ssr: false });
 
 export default function Home() {
   return (
@@ -27,11 +29,7 @@ export default function Home() {
 
       {/* Lazy Loaded Sections */}
       <Suspense
-        fallback={
-          <div className="py-10 text-center text-gray-400">
-            Loading...
-          </div>
-        }
+        fallback={null}
       >
         <Logo />
         <DemoVideoSection />

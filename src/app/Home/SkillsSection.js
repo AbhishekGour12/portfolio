@@ -327,7 +327,7 @@ const SkillsSection = () => {
       style={{ background: "linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 50%,#bae6fd 100%)" }}
     >
       {/* background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none max-sm:hidden">
         <motion.div
           className="absolute -top-40 -right-40 w-80 h-80 bg-blue-300/35 rounded-full blur-3xl"
           animate={{ x: [0,30,0], y: [0,40,0] }}
