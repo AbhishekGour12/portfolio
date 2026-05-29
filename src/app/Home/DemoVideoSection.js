@@ -47,7 +47,7 @@ const DemoVideoSection = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [videoSrc]);
+  }, []);
 
   // Auto-play/pause based on visibility and load the video only when section is near
   useEffect(() => {
@@ -192,7 +192,7 @@ const DemoVideoSection = () => {
                 {/* Video element with lazy loading and preload metadata */}
                 <video
                   ref={videoRef}
-                  src={videoSrc}
+                  src={videoSrc || undefined}
                   loop
                   playsInline
                   muted={false}

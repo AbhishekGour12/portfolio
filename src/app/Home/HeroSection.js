@@ -280,7 +280,16 @@ const HeroSection = () => {
       `}</style>
 
       {/* Background layers (lighter on mobile) */}
-      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-20 sm:opacity-30 mix-blend-multiply pointer-events-none" style={{ backgroundImage: `url('/hero_bg.png')` }} />
+     <Image
+  src="/hero_bg.webp"          // Convert your PNG to WebP first
+  alt="Abhi Services hero background"
+  fill
+  priority
+  quality={75}
+  sizes="100vw"
+  className="object-cover z-0 pointer-events-none opacity-20 sm:opacity-30"
+  style={{ objectPosition: 'center' }}
+/>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
       <div className="absolute top-0 right-0 bottom-0 w-full sm:w-1/2 bg-gradient-to-l from-[#60A5FA]/5 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-1/4 right-0 w-48 h-48 sm:w-96 sm:h-96 bg-[#60A5FA]/10 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
@@ -320,7 +329,7 @@ const HeroSection = () => {
               <span className="text-xs sm:text-sm font-medium text-[#1E3A8A]">AI-Powered Digital Solutions</span>
             </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2] xs:leading-[1.15]">
+            <motion.h1 variants={itemVariants} initial={false} animate={{ opacity: 1, y: 0 }} className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2] xs:leading-[1.15]">
               We Build Scalable Websites,<br className="max-xs:hidden" />
               <span className="bg-gradient-to-r from-[#1E40AF] via-[#4338CA] to-[#60A5FA] bg-clip-text text-transparent animate-gradient-text block mt-1">
                 SaaS Platforms & AI Solutions

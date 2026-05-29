@@ -1,31 +1,30 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    formats: ['image/avif', 'image/webp'], // Serve modern formats
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
-
-      }
-      // Add any other external image hostnames
+        pathname: '/**',
+      },
     ],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production', // Remove console logs in prod
+    removeConsole: process.env.NODE_ENV === 'production',
   },
-  swcMinify: true, // Use SWC for faster minification (default in Next.js 15)
-  // Enable experimental features for performance
+  swcMinify: true,
   experimental: {
-    optimizeCss: true, // Inline critical CSS (experimental)
+    optimizeCss: true, // requires critters
     scrollRestoration: true,
   },
-  // Add headers for static asset caching
   async headers() {
     return [
       {

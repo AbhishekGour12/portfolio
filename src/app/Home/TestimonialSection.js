@@ -12,6 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
+
 const TestimonialsSection = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
@@ -145,7 +146,7 @@ const TestimonialsSection = () => {
               prevEl: ".testimonial-prev",
             }}
             pagination={{ clickable: true, dynamicBullets: true }}
-            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true}}
             breakpoints={{
               640: { slidesPerView: 1.2 },
               768: { slidesPerView: 2 },

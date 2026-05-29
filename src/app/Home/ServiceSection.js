@@ -83,7 +83,7 @@ const ServiceCard = ({ service, index, progress, range, targetScale }) => {
           scale,
           opacity,
           /* Adjusted stacking offset for mobile */
-          top: `calc(-2vh + ${index * 12}px)`, 
+          y: `calc(-2vh + ${index * 12}px)`, // use transform y: `calc(-2vh + ${index * 12}px)`, // use transform
           willChange: "transform, opacity",
         }}
         className="relative w-full max-w-[860px] bg-white/85 backdrop-blur-xl
@@ -197,8 +197,10 @@ const ServiceSection = () => {
 <div ref={container} className="relative px-2 sm:px-4 pb-10">
   {services.map((service, i) => {
     // MODIFIED: Reduced the scaling intensity for mobile (0.02 instead of 0.04)
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 486;
-    const targetScale = 1 - (services.length - i) * (isMobile ? 0.02 : 0.04);
+    // Inside the map function
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const targetScale = 1 - (services.length - i) * (isMobile ? 0.02 : 0.04);
+const range = [i * 0.2, 1];
     
     return (
       <ServiceCard
@@ -209,6 +211,7 @@ const ServiceSection = () => {
         // Slightly tighter range for mobile
         range={[i * 0.2, 1]} 
         targetScale={targetScale}
+       
       />
     );
   })}

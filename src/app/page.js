@@ -3,11 +3,12 @@
 import { Suspense, lazy } from "react";
 
 // Normal Import for Hero Section
-import HeroSection from "./Home/HeroSection";
+
 import PageLoader from "./Components/PageLoader";
 import dynamic from "next/dynamic";
 
 // Lazy Components
+const HeroSection = dynamic(() => import("./Home/HeroSection"), { ssr: true }); // keep SSR
 const Logo = dynamic(() => import("./Home/Logo"), { ssr: false });
 const DemoVideoSection = dynamic(() => import("./Home/DemoVideoSection"), { ssr: false });
 const ProjectSection = dynamic(() => import("./Home/ProjectSection"), { ssr: false });

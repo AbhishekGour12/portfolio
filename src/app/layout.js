@@ -3,11 +3,11 @@ import "./globals.css";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import ScrollToTop from "./Components/ClientLayout";
-import InitialLoader from "./Components/IntialLoader";
-
+import Script from "next/script";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -77,24 +77,32 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head> 
-         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   
-<link rel="preconnect" href="https://images.unsplash.com" />
-<link rel="dns-prefetch" href="https://images.unsplash.com" />
+   <head>
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
+  <link rel="preload" as="image" href="/hero_bg.webp" fetchPriority="high" />
 
-<link rel="icon" type="image/png" href="/logo.png"/>
-    <title>Abhi Services</title>
-  </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossOrigin="anonymous"
+  />
+
+  <link rel="preconnect" href="https://res.cloudinary.com" />
+
+  <link rel="icon" type="image/png" href="/logo.png" />
+</head>
 
       <body className="min-h-full flex flex-col">
-        <InitialLoader> 
+        
         <ScrollToTop/>
         <Navbar/>
         {children}
         <Footer/>
-        </InitialLoader>
+
+      <Script src="https://www.googletagmanager.com/gtag/js" strategy="lazyOnload" />
         </body>
     </html>
   );
