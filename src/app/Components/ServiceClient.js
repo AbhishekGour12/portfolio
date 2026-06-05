@@ -28,6 +28,7 @@ const ServiceClient = () => {
   const { scrollYProgress } = useScroll();
   const processSectionRef = useRef(null);
   const processProgress = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
+  const processWidth = useTransform(processProgress, (value) => `${value * 100}%`);
 
 
   const techStack = [
@@ -271,7 +272,7 @@ const ServiceClient = () => {
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 rounded-full hidden lg:block -translate-y-1/2" />
               <motion.div
                 className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-[#1E40AF] to-[#60A5FA] rounded-full hidden lg:block -translate-y-1/2"
-                style={{ width: useTransform(processProgress, (value) => `${value * 100}%`) }}
+                style={{ width: processWidth }}
               />
               <div className="flex flex-col lg:flex-row justify-between gap-6 relative">
                 {processSteps.map((step, i) => (

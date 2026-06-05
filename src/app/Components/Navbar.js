@@ -84,6 +84,7 @@ const Navbar = () => {
                 priority
                 suppressHydrationWarning
                 className="h-10 md:h-12 w-auto object-contain"
+                style={{ width: "auto" }}
               />
 
               <span className="text-sm md:text-base font-semibold">
@@ -162,6 +163,7 @@ const Navbar = () => {
             width={120}
             height={32}
             className="h-8 w-auto object-contain"
+            style={{ width: "auto" }}
           />
           <button
             onClick={() => setIsOpen(false)}

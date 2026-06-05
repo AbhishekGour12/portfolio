@@ -90,6 +90,7 @@ const ProblemSolutionSection = () => {
 
   // Progress for connector line (0 to 1)
   const lineProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const connectorTop = useTransform(lineProgress, [0, 1], ["5%", "95%"]);
 
   // Automatic index change based on scroll
   useEffect(() => {
@@ -204,7 +205,7 @@ const ProblemSolutionSection = () => {
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#60A5FA]/30 via-[#1E40AF] to-[#60A5FA]/30 rounded-full transform -translate-x-1/2" />
             <motion.div
               className="absolute left-1/2 w-2 h-2 rounded-full bg-[#60A5FA] shadow-[0_0_20px_#60A5FA] transform -translate-x-1/2"
-              style={{ top: useTransform(lineProgress, [0, 1], ["5%", "95%"]) }}
+              style={{ top: connectorTop }}
             />
             {[...Array(5)].map((_, i) => (
               <motion.div

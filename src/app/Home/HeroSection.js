@@ -143,14 +143,20 @@ const VerticalCarousel = React.memo(() => {
   }, []);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    let lastWidth = window.innerWidth;
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      if (currentWidth !== lastWidth) {
+        lastWidth = currentWidth;
+        setIsMobile(currentWidth < 768);
+        measureSetHeight();
+      }
+    };
+    setIsMobile(window.innerWidth < 768);
     measureSetHeight();
-    window.addEventListener("resize", measureSetHeight);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener("resize", checkMobile);
-      window.removeEventListener("resize", measureSetHeight);
+      window.removeEventListener("resize", handleResize);
     };
   }, [measureSetHeight]);
 
@@ -243,12 +249,17 @@ const HeroSection = () => {
 
   useEffect(() => {
     setIsClient(true);
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    let lastWidth = window.innerWidth;
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      if (currentWidth !== lastWidth) {
+        lastWidth = currentWidth;
+        setIsMobile(currentWidth < 768);
+      }
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const statsData = [
