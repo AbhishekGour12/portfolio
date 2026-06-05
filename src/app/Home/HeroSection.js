@@ -1,10 +1,44 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import Link from "next/link";
 import { FaChartLine, FaShieldAlt, FaRocket } from "react-icons/fa";
 import { Cpu, Zap, Layout, Sparkles } from "lucide-react";
 import Image from "next/image";
+
+// ========== Custom lightweight useInView hook ==========
+const useInView = (ref, options = {}) => {
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          if (options.once) {
+            observer.unobserve(el);
+          }
+        } else if (!options.once) {
+          setIsInView(false);
+        }
+      },
+      {
+        rootMargin: options.margin || "0px",
+        threshold: options.threshold || 0,
+      }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref, options.margin, options.threshold, options.once]);
+
+  return isInView;
+};
+
 
 // ========== Animated Counter ==========
 const AnimatedCounter = ({ target, suffix = "", duration = 1.5 }) => {
@@ -46,12 +80,12 @@ const expertiseItems = [
   {
     title: "E‑Learning Platforms",
     description: "Interactive LMS, video streaming, and certification systems.",
-    image: "/e-learning.png",
+    image: "/e-learning.webp",
   },
   {
     title: "SaaS Products",
     description: "Subscription‑ready, multi‑tenant cloud applications.",
-    image: "/saas.png",
+    image: "/saas.webp",
   },
   {
     title: "Dashboards & Admin Panels",
@@ -76,7 +110,7 @@ const expertiseItems = [
   {
     title: "Food Delivery Websites",
     description: "Restaurant aggregators, order tracking, and payment gateways.",
-    image: "/foodwebsite.png",
+    image: "/foodwebsite.webp",
   },
 ];
 
@@ -146,8 +180,8 @@ const VerticalCarousel = React.memo(() => {
             className="carousel-item group bg-white/80 border border-white/50 rounded-2xl shadow-md overflow-hidden shrink-0"
             style={{
               height: isMobile ? "clamp(85px, 18vw, 100px)" : "clamp(90px, 20vw, 110px)",
-              backdropFilter: isMobile ? "blur(4px)" : "blur(8px)",
-              WebkitBackdropFilter: isMobile ? "blur(4px)" : "blur(8px)",
+              backdropFilter: isMobile ? "none" : "blur(8px)",
+              WebkitBackdropFilter: isMobile ? "none" : "blur(8px)",
             }}
           >
             <div className="flex flex-row h-full">
@@ -155,10 +189,11 @@ const VerticalCarousel = React.memo(() => {
                 <Image
                   src={item.image}
                   alt={item.title}
-                  fill
-                  className="object-cover"
-                  priority={idx < 3}
-                  loading={idx >= 3 ? "lazy" : undefined}
+                  width={120}
+                  height={110}
+                  className="object-cover w-full h-full"
+                  priority={idx < 2}
+                  loading={idx >= 2 ? "lazy" : undefined}
                   sizes="(max-width: 480px) 80px, 120px"
                   quality={75}
                 />
@@ -181,7 +216,7 @@ const VerticalCarousel = React.memo(() => {
         ))}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes scrollUp {
           0% {
             transform: translate3d(0, 0, 0);
@@ -190,16 +225,8 @@ const VerticalCarousel = React.memo(() => {
             transform: translate3d(0, -50%, 0);
           }
         }
-        /* Apply animation with dynamic duration */
-        div[ref="${trackRef}"] {
-          animation: scrollUp ${animationDuration}s linear infinite;
-          will-change: transform;
-          backface-visibility: hidden;
-          transform: translateZ(0);
-        }
-        /* Pause on hover for desktop */
         @media (hover: hover) and (min-width: 768px) {
-          div[ref="${trackRef}"]:hover {
+          .vc-track:hover {
             animation-play-state: paused;
           }
         }
@@ -211,35 +238,17 @@ VerticalCarousel.displayName = "VerticalCarousel";
 
 // ========== HERO SECTION (optimized for mobile) ==========
 const HeroSection = () => {
-  const { scrollY } = useScroll();
-  const rightCardY = useTransform(scrollY, [0, 500], [0, 30]);
-
-  const [particles, setParticles] = useState([]);
   const [isClient, setIsClient] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    const mobile = window.innerWidth < 768;
-    setIsMobile(mobile);
-    if (mobile) {
-      setParticles([]);
-      return;
-    }
-    setParticles(
-      Array.from({ length: 12 }, (_, i) => ({
-        id: i,
-        initialX: Math.random() * 100,
-        initialY: Math.random() * 100,
-        duration: 15 + Math.random() * 20,
-        delay: Math.random() * 5,
-        amplitudeX: 10 + Math.random() * 20,
-        amplitudeY: 10 + Math.random() * 20,
-        size: 1.5 + Math.random() * 3,
-        opacity: 0.12,
-        color: Math.random() > 0.6 ? "#60A5FA" : "#1E40AF",
-      }))
-    );
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const statsData = [
@@ -247,18 +256,9 @@ const HeroSection = () => {
     { icon: FaShieldAlt, label: "Success Rate", value: 99, suffix: "%" },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
-  };
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
-
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-      <style jsx global>{`
+      <style>{`
         @keyframes gradientShift {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -268,7 +268,51 @@ const HeroSection = () => {
           background-size: 200% auto;
           animation: gradientShift 6s ease infinite;
         }
-        /* Reduce backdrop blur on mobile for performance */
+        @keyframes fadeSlideUp {
+          from {
+            opacity: 0;
+            transform: translate3d(0, 15px, 0);
+          }
+          to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+          }
+        }
+        .animate-fade-slide-up {
+          opacity: 0;
+          animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes rightPanelFade {
+          from {
+            opacity: 0;
+            transform: translate3d(0, 20px, 0);
+          }
+          to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+          }
+        }
+        .animate-right-panel {
+          opacity: 0;
+          animation: rightPanelFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation-delay: 200ms;
+        }
+        @keyframes floatBlob1 {
+          0% { transform: translate3d(0, 0, 0); }
+          50% { transform: translate3d(30px, 20px, 0); }
+          100% { transform: translate3d(0, 0, 0); }
+        }
+        @keyframes floatBlob2 {
+          0% { transform: translate3d(0, 0, 0); }
+          50% { transform: translate3d(-20px, -20px, 0); }
+          100% { transform: translate3d(0, 0, 0); }
+        }
+        .float-blob-1 {
+          animation: floatBlob1 20s ease-in-out infinite;
+        }
+        .float-blob-2 {
+          animation: floatBlob2 24s ease-in-out infinite;
+        }
         @media (max-width: 640px) {
           .carousel-item {
             backdrop-filter: blur(4px);
@@ -280,16 +324,17 @@ const HeroSection = () => {
       `}</style>
 
       {/* Background layers (lighter on mobile) */}
-     <Image
-  src="/hero_bg.webp"          // Convert your PNG to WebP first
-  alt="Abhi Services hero background"
-  fill
-  priority
-  quality={75}
-  sizes="100vw"
-  className="object-cover z-0 pointer-events-none opacity-20 sm:opacity-30"
-  style={{ objectPosition: 'center' }}
-/>
+      <Image
+        src="/hero_bg.webp"
+        alt="Abhi Services hero background"
+        fill
+        priority
+        quality={60}
+        sizes="100vw"
+        fetchPriority="high"
+        className="object-cover z-0 pointer-events-none opacity-20 sm:opacity-30"
+        style={{ objectPosition: 'center' }}
+      />
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-white via-white/90 to-transparent" />
       <div className="absolute top-0 right-0 bottom-0 w-full sm:w-1/2 bg-gradient-to-l from-[#60A5FA]/5 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-1/4 right-0 w-48 h-48 sm:w-96 sm:h-96 bg-[#60A5FA]/10 rounded-full blur-2xl sm:blur-3xl pointer-events-none" />
@@ -298,23 +343,10 @@ const HeroSection = () => {
       <div className="absolute inset-0 pointer-events-none opacity-[0.008] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10h40M10 0v40' stroke='%231E40AF' stroke-width='0.4' fill='none' /%3E%3C/svg%3E")` }} />
 
       {/* Floating blobs (reduced motion on mobile) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <motion.div className="absolute -top-40 -right-20 w-72 h-72 bg-blue-300/8 rounded-full blur-3xl" animate={{ x: [0, 30, 0], y: [0, 20, 0] }} transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }} />
-        <motion.div className="absolute -bottom-32 -left-20 w-72 h-72 bg-indigo-200/8 rounded-full blur-3xl" animate={{ x: [0, -20, 0], y: [0, -20, 0] }} transition={{ duration: 24, repeat: Infinity, repeatType: "reverse" }} />
-      </div>
-
-      {/* Particles – only on desktop */}
       {isClient && !isMobile && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          {particles.map((p) => (
-            <motion.div
-              key={p.id}
-              className="absolute rounded-full transform-gpu"
-              style={{ left: `${p.initialX}%`, top: `${p.initialY}%`, width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 ${p.size * 1}px ${p.color}`, opacity: p.opacity }}
-              animate={{ x: [0, p.amplitudeX, -p.amplitudeX * 0.5, 0], y: [0, -p.amplitudeY, p.amplitudeY * 0.6, 0] }}
-              transition={{ duration: p.duration, repeat: Infinity, repeatType: "reverse", delay: p.delay, ease: "easeInOut" }}
-            />
-          ))}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-40 -right-20 w-72 h-72 bg-blue-300/8 rounded-full blur-3xl float-blob-1" />
+          <div className="absolute -bottom-32 -left-20 w-72 h-72 bg-indigo-200/8 rounded-full blur-3xl float-blob-2" />
         </div>
       )}
 
@@ -323,20 +355,20 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-8 xs:gap-10 lg:gap-16 items-center">
 
           {/* Left column */}
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5 xs:space-y-6 text-center lg:text-left">
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-3.5 py-1.5 border border-blue-100 shadow-sm mx-auto lg:mx-0 w-fit">
+          <div className="space-y-5 xs:space-y-6 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-3.5 py-1.5 border border-blue-100 shadow-sm mx-auto lg:mx-0 w-fit animate-fade-slide-up" style={{ animationDelay: "50ms" }}>
               <Sparkles className="w-3.5 h-3.5 text-[#1E40AF]" />
               <span className="text-xs sm:text-sm font-medium text-[#1E3A8A]">AI-Powered Digital Solutions</span>
-            </motion.div>
+            </div>
 
-            <motion.h1 variants={itemVariants} initial={false} animate={{ opacity: 1, y: 0 }} className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2] xs:leading-[1.15]">
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.2] xs:leading-[1.15] animate-fade-slide-up" style={{ animationDelay: "110ms" }}>
               We Build Scalable Websites,<br className="max-xs:hidden" />
               <span className="bg-gradient-to-r from-[#1E40AF] via-[#4338CA] to-[#60A5FA] bg-clip-text text-transparent animate-gradient-text block mt-1">
                 SaaS Platforms & AI Solutions
               </span>
-            </motion.h1>
+            </h1>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-1.5 justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-1.5 justify-center lg:justify-start animate-fade-slide-up" style={{ animationDelay: "170ms" }}>
               <div className="inline-flex flex-wrap gap-1.5 items-center text-[10px] sm:text-xs font-mono font-semibold text-[#1E40AF] bg-blue-50/60 px-2.5 py-1 rounded-full justify-center">
                 <Cpu className="w-2.5 h-2.5" /> AI
                 <span className="text-gray-300">•</span>
@@ -346,67 +378,57 @@ const HeroSection = () => {
                 <span className="text-gray-300 max-xs:hidden">•</span>
                 <span className="max-xs:mt-0.5">Scalable Systems</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.p variants={itemVariants} className="text-sm sm:text-base md:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-sm rounded-xl max-md:bg-white/40 max-md:p-3 max-md:border max-md:border-white/40">
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 max-w-md leading-relaxed mx-auto lg:mx-0 max-md:backdrop-blur-sm rounded-xl max-md:bg-white/40 max-md:p-3 max-md:border max-md:border-white/40 animate-fade-slide-up" style={{ animationDelay: "230ms" }}>
               We help startups, businesses, and growing brands build modern web applications, AI-powered systems, scalable SaaS products, and high-performance digital experiences.
-            </motion.p>
+            </p>
 
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-2 justify-center lg:justify-start max-xs:px-2">
+            <div className="flex flex-wrap gap-2 justify-center lg:justify-start max-xs:px-2 animate-fade-slide-up" style={{ animationDelay: "290ms" }}>
               {["AI Integrations", "Smart Automation", "Scalable Architecture", "Enterprise UI/UX"].map((tag, i) => (
                 <span key={i} className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm border border-gray-200/80 text-gray-700 shadow-sm hover:border-blue-300 transition-all">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                   {tag}
                 </span>
               ))}
-            </motion.div>
+            </div>
 
             {/* Buttons */}
-            <motion.div variants={itemVariants} className="flex flex-col xs:flex-row gap-3 pt-1 justify-center lg:justify-start px-4 xs:px-0">
-              <motion.a
+            <div className="flex flex-col xs:flex-row gap-3 pt-1 justify-center lg:justify-start px-4 xs:px-0">
+              <a
                 href="/contact"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden shadow-md text-center transform-gpu"
-                style={{ background: "linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)" }}
+                className="group relative px-6 py-3 rounded-xl font-semibold text-sm text-white overflow-hidden shadow-md text-center transform-gpu transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98] animate-fade-slide-up"
+                style={{ background: "linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)", animationDelay: "350ms" }}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   Start Your Project <FaRocket className="text-xs group-hover:translate-x-0.5 transition-transform" />
                 </span>
-              </motion.a>
-              <Link href="/project" className="block">
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-6 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white transition-all w-full xs:w-auto shadow-sm hover:shadow-md transform-gpu"
+              </a>
+              <Link href="/project" className="block animate-fade-slide-up" style={{ animationDelay: "350ms" }}>
+                <button
+                  className="px-6 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-white transition-all w-full xs:w-auto shadow-sm hover:shadow-md transform-gpu transition-transform duration-200 hover:scale-[1.01] active:scale-[0.98]"
                 >
                   View Work →
-                </motion.button>
+                </button>
               </Link>
-            </motion.div>
+            </div>
 
             {/* Stats */}
-            <motion.div variants={itemVariants} className="pt-3 flex gap-4 xs:gap-6 items-center justify-center lg:justify-start max-xs:border max-xs:border-gray-200/50 max-xs:backdrop-blur-sm max-xs:bg-white/40 rounded-xl p-3 mx-4 xs:mx-0">
+            <div className="pt-3 flex gap-4 xs:gap-6 items-center justify-center lg:justify-start max-xs:border max-xs:border-gray-200/50 max-xs:backdrop-blur-sm max-xs:bg-white/40 rounded-xl p-3 mx-4 xs:mx-0 animate-fade-slide-up" style={{ animationDelay: "410ms" }}>
               {statsData.map((stat, idx) => (
                 <StatsItem key={idx} icon={stat.icon} label={stat.label} value={stat.value} suffix={stat.suffix} />
               ))}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Right column – Carousel (GPU accelerated) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            style={{ y: isClient && !isMobile && window.innerWidth > 1024 ? rightCardY : 0 }}
-            className="relative flex justify-center mt-4 lg:mt-0 z-10 w-full max-w-sm xs:max-w-md lg:max-w-lg mx-auto px-2 xs:px-0"
-          >
+          <div className="relative flex justify-center mt-4 lg:mt-0 z-10 w-full max-w-sm xs:max-w-md lg:max-w-lg mx-auto px-2 xs:px-0 animate-right-panel">
             {/* Soft glow – hidden on mobile */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#60A5FA]/10 via-[#1E40AF]/5 to-transparent blur-2xl rounded-3xl pointer-events-none max-sm:hidden" />
             <div className="relative w-full backdrop-blur-md bg-white/60 border border-white/70 rounded-3xl shadow-xl p-2 sm:p-3 overflow-hidden z-10">
               <VerticalCarousel />
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

@@ -75,13 +75,13 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
    <head>
+  <link rel="preload" as="image" href="/_next/image?url=%2Fhero_bg.webp&w=750&q=60" fetchPriority="high" />
   <link rel="preconnect" href="https://images.unsplash.com" />
   <link rel="dns-prefetch" href="https://images.unsplash.com" />
-
-  <link rel="preload" as="image" href="/hero_bg.webp" fetchPriority="high" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
@@ -95,7 +95,7 @@ export default function RootLayout({ children }) {
   <link rel="icon" type="image/png" href="/logo.png" />
 </head>
 
-      <body className="min-h-full flex flex-col">
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
         
         <ScrollToTop/>
         <Navbar/>

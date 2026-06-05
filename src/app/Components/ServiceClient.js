@@ -4,8 +4,6 @@ import React, { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView, useMotionValue, useAnimationFrame } from "framer-motion";
 import Link from "next/link";
 import Head from "next/head";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import {
   Globe,
   Sparkles,
@@ -31,15 +29,6 @@ const ServiceClient = () => {
   const processSectionRef = useRef(null);
   const processProgress = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: "ease-out-cubic",
-      offset: 100,
-      disable: window.innerWidth < 768,
-    });
-  }, []);
 
   const techStack = [
     { name: "React", icon: <Code size={24} />, level: 95, color: "#61DAFB" },

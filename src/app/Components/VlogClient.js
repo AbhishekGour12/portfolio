@@ -6,8 +6,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, EffectCoverflow } from "swiper/modules";
 import { getDatabase, ref, get, set, push } from "firebase/database";
 import { app } from "../Components/Firebase";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import {
   Play,
   Pause,
@@ -55,7 +53,6 @@ const VlogClient = () => {
   const processLineProgress = useTransform(scrollYProgress, [0.3, 0.5], [0, 1]);
 
   useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
     fetchData();
   }, []);
 
@@ -260,7 +257,7 @@ const VlogClient = () => {
             </div>
 
             {/* 3. Process Timeline (How We Build Projects) */}
-            <div className="mb-24" data-aos="fade-up">
+            <div className="mb-24 animate-fade-slide-up" style={{ animationDelay: "100ms" }}>
               <div className="text-center mb-12">
                 <span className="text-sm font-semibold text-[#1E40AF] tracking-wide uppercase">Methodology</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">How We Build Projects</h2>
@@ -520,7 +517,7 @@ const VlogClient = () => {
             </div>
 
             {/* 6. Interactive Video Carousel */}
-            <div className="mb-24" data-aos="fade-up">
+            <div className="mb-24 animate-fade-slide-up" style={{ animationDelay: "150ms" }}>
               <h3 className="text-2xl font-bold text-gray-900 mb-6">More from our library</h3>
               <Swiper
                 modules={[Navigation, EffectCoverflow, Autoplay]}
@@ -553,7 +550,7 @@ const VlogClient = () => {
             </div>
 
             {/* 7. Educational Value Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-24" data-aos="fade-up">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-24 animate-fade-slide-up" style={{ animationDelay: "200ms" }}>
               {[
                 { icon: <GitBranch />, title: "Scalable Architecture", desc: "Built to grow with your business." },
                 { icon: <Zap />, title: "Performance First", desc: "Core Web Vitals, 90+ Lighthouse." },
@@ -573,7 +570,7 @@ const VlogClient = () => {
             </div>
 
             {/* 8. CTA Section */}
-            <div className="relative" data-aos="fade-up">
+            <div className="relative animate-fade-slide-up" style={{ animationDelay: "250ms" }}>
               <div className="bg-gradient-to-br from-white/80 to-blue-50/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-8 md:p-12 text-center overflow-hidden">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-300/30 rounded-full blur-3xl" />
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl" />
@@ -653,7 +650,7 @@ const VlogClient = () => {
         </AnimatePresence>
       </section>
 
-      <style jsx global>{`
+      <style>{`
         .insight-carousel .swiper-slide {
           transition: all 0.3s;
         }

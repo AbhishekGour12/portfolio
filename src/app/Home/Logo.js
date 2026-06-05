@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 
 // Logos data (unchanged)
 const topRowLogos = [
   { name: "MyAstrova", src: "/myastrova.png" },
   { name: "GutTalks", src: "/guttalks.png" },
-  { name: "Feastify", src: "/feastify.png" },
+  { name: "Feastify", src: "/feastify.webp" },
   { name: "GymX", src: "/dumbleLogo.png" },
   { name: "BrewandBean", src: "/brewandbean.png" },
   { name: "MJD", src: "/mjd.png" },
@@ -15,13 +15,13 @@ const topRowLogos = [
 ];
 
 const bottomRowLogos = [
-  { name: "UrbanProperty", src: "/urbanproperty.png" },
-  { name: "SmileCare", src: "/smilecare.png" },
-  { name: "HomeEase", src: "/homeease.png" },
-  { name: "SSTTrader", src: "/ssttrader.png" },
-  { name: "buynest", src: "/buynest.png" },
-  { name: "byteforge", src: "/byteforge.png" },
-  { name: "urbantandoor", src: "/urbantandoor.png" },
+  { name: "UrbanProperty", src: "/urbanproperty.webp" },
+  { name: "SmileCare", src: "/smilecare.webp" },
+  { name: "HomeEase", src: "/homeease.webp" },
+  { name: "SSTTrader", src: "/ssttrader.webp" },
+  { name: "buynest", src: "/buynest.webp" },
+  { name: "byteforge", src: "/byteforge.webp" },
+  { name: "urbantandoor", src: "/urbantandoor.webp" },
 ];
 
 // Optimized Logo Card
@@ -83,7 +83,7 @@ const MarqueeRow = ({ logos, direction = 1 }) => {
         ))}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .marquee-track {
           display: flex;
           flex-shrink: 0;
@@ -96,13 +96,11 @@ const MarqueeRow = ({ logos, direction = 1 }) => {
           0% { transform: translate3d(-50%, 0, 0); }
           100% { transform: translate3d(0, 0, 0); }
         }
-        /* Pause on hover for desktop (optional, improves UX) */
         @media (hover: hover) and (min-width: 768px) {
           .marquee-track:hover {
             animation-play-state: paused;
           }
         }
-        /* For users who prefer reduced motion */
         @media (prefers-reduced-motion: reduce) {
           .marquee-track {
             animation: none !important;
@@ -115,15 +113,6 @@ const MarqueeRow = ({ logos, direction = 1 }) => {
 };
 
 const Logo = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100/20 py-12 sm:py-16 md:py-20">
       {/* Soft ambient glow */}

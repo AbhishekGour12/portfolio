@@ -323,7 +323,7 @@ const SkillsSection = () => {
   return (
     <section
       ref={ref}
-      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden below-fold-section"
       style={{ background: "linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 50%,#bae6fd 100%)" }}
     >
       {/* background blobs */}

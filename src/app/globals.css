@@ -1,4 +1,28 @@
 @import "tailwindcss";
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 15px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-slide-up {
+  opacity: 0;
+  animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Apply content-visibility to below-fold sections for faster initial paint */
+.below-fold-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px; /* approximate height placeholder */
+}
 
 .expertise-swiper .swiper-slide {
   height: auto !important;

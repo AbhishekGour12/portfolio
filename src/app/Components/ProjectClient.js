@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { getDatabase, ref, get } from "firebase/database";
 import { app } from "../Components/Firebase";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
@@ -19,9 +17,6 @@ const ProjectClient = ({ Profile1 = "white" }) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100, disable: window.innerWidth < 768 });
-  }, []);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -87,7 +82,7 @@ const ProjectClient = ({ Profile1 = "white" }) => {
 
         <div className="relative z-10 max-w-7xl mx-auto">
           {/* Header – responsive margins */}
-          <div className="text-center mb-12 md:mb-16" data-aos="fade-up">
+          <div className="text-center mb-12 md:mb-16 animate-fade-slide-up" style={{ animationDelay: "100ms" }}>
             <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/60 backdrop-blur-sm border border-blue-200 text-sm font-medium text-[#1E40AF] mb-4">
               PORTFOLIO
             </span>
@@ -123,8 +118,6 @@ const ProjectClient = ({ Profile1 = "white" }) => {
                     {/* Image / Media Slider – always first on mobile */}
                     <div
                       className={`relative order-1 ${!isEven ? "lg:order-2" : "lg:order-1"}`}
-                      data-aos="fade-right"
-                      data-aos-delay="100"
                     >
                       <div className="relative rounded-2xl overflow-hidden shadow-xl group  ">
                         <Swiper
@@ -168,8 +161,6 @@ const ProjectClient = ({ Profile1 = "white" }) => {
                     {/* Project Details – always second on mobile */}
                     <div
                       className={`order-2 ${!isEven ? "lg:order-1" : "lg:order-2"} space-y-4 sm:space-y-5`}
-                      data-aos="fade-up"
-                      data-aos-delay="200"
                     >
                       {/* Badge */}
                       <div className="flex flex-wrap gap-2">
@@ -241,7 +232,7 @@ const ProjectClient = ({ Profile1 = "white" }) => {
         </div>
       </section>
 
-      <style jsx global>{`
+      <style>{`
         .project-detail-swiper {
           width: 100%;
          

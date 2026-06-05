@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   FaMobileAlt,
@@ -143,6 +143,15 @@ const ServiceCard = ({ service, index, progress, range, targetScale }) => {
 // ─────────────────────────────────────────────
 const ServiceSection = () => {
   const container = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ["start start", "end end"],
@@ -156,7 +165,7 @@ const ServiceSection = () => {
   ];
 
   return (
-    <section className="relative bg-[#F8FAFC]">
+    <section className="relative bg-[#F8FAFC] below-fold-section">
 
       {/* ── background decor (static, no animation = fast) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
@@ -196,22 +205,17 @@ const ServiceSection = () => {
     {/* ── Sticky stack ── */}
 <div ref={container} className="relative px-2 sm:px-4 pb-10">
   {services.map((service, i) => {
-    // MODIFIED: Reduced the scaling intensity for mobile (0.02 instead of 0.04)
-    // Inside the map function
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-const targetScale = 1 - (services.length - i) * (isMobile ? 0.02 : 0.04);
-const range = [i * 0.2, 1];
-    
+    const targetScale = 1 - (services.length - i) * (isMobile ? 0.02 : 0.04);
+    const range = [i * 0.2, 1];
+
     return (
       <ServiceCard
         key={i}
         index={i}
         service={service}
         progress={scrollYProgress}
-        // Slightly tighter range for mobile
-        range={[i * 0.2, 1]} 
+        range={range}
         targetScale={targetScale}
-       
       />
     );
   })}

@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../Components/Firebase";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import {FaLinkedin, FaGithub, FaInstagram, FaTwitter} from "react-icons/fa"
 
 const ContactClient = () => {
@@ -21,9 +19,6 @@ const ContactClient = () => {
   const [submitError, setSubmitError] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
 
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
-  }, []);
 
   const projectTypes = [
     "Website Development",
@@ -450,7 +445,7 @@ const ContactClient = () => {
           </div>
 
           {/* Google Map Section */}
-          <div className="mt-24" data-aos="fade-up">
+          <div className="mt-24 animate-fade-slide-up" style={{ animationDelay: "150ms" }}>
             <div className="bg-white/60 backdrop-blur-sm rounded-3xl overflow-hidden shadow-xl border border-blue-100">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117000.08638485213!2d75.78880595!3d22.7195687!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3962fcad1b410ddb%3A0x7ec1a36634897b3f!2sIndore%2C%20Madhya%20Pradesh!5e0!3m2!1sen!2sin!4v1714045123456!5m2!1sen!2sin"

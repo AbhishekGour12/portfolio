@@ -2,8 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { Play, Pause, ChevronRight, CheckCircle2, Star, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,8 +28,6 @@ const DemoVideoSection = () => {
   ];
 
   useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100, disable: window.innerWidth < 768 });
-
     const handleResize = () => {
       const desktop = window.innerWidth >= 768;
       setIsDesktop(desktop);

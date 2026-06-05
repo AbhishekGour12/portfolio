@@ -5,8 +5,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import CountUp from "react-countup";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import TechStack from "../Components/TechStack";
 import { useInView } from "react-intersection-observer";
 
@@ -33,9 +31,6 @@ const AboutClient = () => {
     setParticles(newParticles);
   }, []);
 
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
-  }, []);
 
   // Stats data
   const stats = [
@@ -171,7 +166,7 @@ const AboutClient = () => {
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-200/30 to-transparent rounded-full blur-2xl" />
                 <Image
-                  src="/about.png"
+                  src="/about.webp"
                   alt="Team collaboration"
                   width={500}
                   height={500}
@@ -201,7 +196,6 @@ const AboutClient = () => {
           <section className="py-20 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-white to-blue-50/30">
             <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
               <motion.div
-                data-aos="fade-right"
                 className="rounded-2xl overflow-hidden shadow-xl"
               >
                 <Image
@@ -212,7 +206,7 @@ const AboutClient = () => {
                   className="w-full h-auto object-cover"
                 />
               </motion.div>
-              <motion.div data-aos="fade-left" data-aos-delay="100">
+              <motion.div>
                 <span className="text-sm font-semibold text-[#1E40AF] tracking-wide uppercase">Our story</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">
                   Who we are & what drives us

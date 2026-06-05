@@ -5,12 +5,6 @@ import { motion, useInView, useMotionValue, useTransform, animate } from "framer
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
-import AOS from "aos";
-import "aos/dist/aos.css";
-
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 
 const TestimonialsSection = () => {
@@ -27,7 +21,6 @@ const TestimonialsSection = () => {
   const industriesDisplay = useTransform(industriesCount, (latest) => `${Math.round(latest)}+`);
 
   useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic" });
     if (isInView) {
       animate(projectsCount, 20, { duration: 2, ease: "easeOut" });
       animate(satisfactionCount, 98, { duration: 2, ease: "easeOut" });
@@ -108,7 +101,7 @@ const TestimonialsSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white"
+      className="relative py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white below-fold-section"
     >
       {/* Background blobs */}
       <div className="absolute inset-0 pointer-events-none max-sm:hidden">
@@ -120,7 +113,7 @@ const TestimonialsSection = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div data-aos="fade-up" className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-slide-up" style={{ animationDelay: "100ms" }}>
           <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/60 backdrop-blur-sm border border-blue-200 text-sm font-medium text-[#1E40AF] mb-4">
             Testimonials
           </span>
@@ -136,7 +129,7 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Horizontal Testimonial Carousel */}
-        <div className="relative px-4 sm:px-8 md:px-12" data-aos="fade-up" data-aos-delay="100">
+        <div className="relative px-4 sm:px-8 md:px-12 animate-fade-slide-up" style={{ animationDelay: "200ms" }}>
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={24}
@@ -205,10 +198,10 @@ const TestimonialsSection = () => {
           </Swiper>
 
           {/* Navigation arrows */}
-          <button className="testimonial-prev absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 shadow-md hover:bg-[#1E40AF] hover:text-white transition-all z-20 flex items-center justify-center">
+          <button className="testimonial-prev absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 shadow-md hover:bg-[#1E40AF] hover:text-white transition-all z-20 flex items-center justify-center" aria-label="Previous testimonial">
             <ChevronLeft size={20} className="text-[#1E40AF] group-hover:text-white" />
           </button>
-          <button className="testimonial-next absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 shadow-md hover:bg-[#1E40AF] hover:text-white transition-all z-20 flex items-center justify-center">
+          <button className="testimonial-next absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 shadow-md hover:bg-[#1E40AF] hover:text-white transition-all z-20 flex items-center justify-center" aria-label="Next testimonial">
             <ChevronRight size={20} className="text-[#1E40AF] group-hover:text-white" />
           </button>
         </div>
@@ -237,7 +230,7 @@ const TestimonialsSection = () => {
         </div>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         .testimonial-swiper {
           padding-bottom: 48px !important;
         }

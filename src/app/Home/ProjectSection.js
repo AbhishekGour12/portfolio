@@ -8,8 +8,6 @@ import { app } from "../Components/Firebase";
 import { CldImage } from "next-cloudinary";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Trash2, Upload, Loader2 } from "lucide-react";
 
@@ -100,7 +98,6 @@ const ProjectSection = () => {
   }, []);
 
   useEffect(() => {
-    AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
     fetchProjects();
   }, [fetchProjects]);
 
@@ -194,7 +191,7 @@ const ProjectSection = () => {
 
   return (
     <>
-      <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white">
+      <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-white below-fold-section">
         {/* Background blobs – hidden on mobile for performance */}
         <div className="absolute inset-0 pointer-events-none max-sm:hidden">
           <div className="absolute top-0 left-0 w-96 h-96 bg-blue-200/40 rounded-full blur-3xl" />
@@ -362,10 +359,10 @@ const ProjectSection = () => {
           {/* Navigation buttons */}
           <div className="flex flex-col items-center gap-6 mt-10">
             <div className="flex items-center gap-4">
-              <button className="custom-swiper-button-prev w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 flex items-center justify-center text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white transition-all shadow-md hover:shadow-lg">
+              <button className="custom-swiper-button-prev w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 flex items-center justify-center text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white transition-all shadow-md hover:shadow-lg" aria-label="Previous project">
                 <ChevronLeft size={20} />
               </button>
-              <button className="custom-swiper-button-next w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 flex items-center justify-center text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white transition-all shadow-md hover:shadow-lg">
+              <button className="custom-swiper-button-next w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm border border-blue-200 flex items-center justify-center text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white transition-all shadow-md hover:shadow-lg" aria-label="Next project">
                 <ChevronRight size={20} />
               </button>
             </div>
@@ -487,6 +484,7 @@ const ProjectSection = () => {
                             type="button"
                             onClick={() => removeImage(idx)}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-5 h-5 flex items-center justify-center hover:bg-red-600 transition"
+                            aria-label="Remove image"
                           >
                             <Trash2 size={10} />
                           </button>
@@ -542,7 +540,7 @@ const ProjectSection = () => {
         )}
       </AnimatePresence>
 
-      <style jsx global>{`
+      <style>{`
         .project-coverflow .swiper-slide {
           transition: all 0.3s ease;
           height: auto;

@@ -1,26 +1,19 @@
-"use client";
-
-import { Suspense, lazy } from "react";
-
-// Normal Import for Hero Section
-
-import PageLoader from "./Components/PageLoader";
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import SectionSkeleton from "./Components/SectionSkeleton";
+import {
+  LazyLogo,
+  LazyDemoVideo,
+  LazyProblemSolution,
+  LazyProject,
+  LazySkills,
+  LazyService,
+  LazyTestimonials,
+  LazyFAQ
+} from "./Components/LazySections";
 
 // Lazy Components
 const HeroSection = dynamic(() => import("./Home/HeroSection"), { ssr: true }); // keep SSR
-const Logo = dynamic(() => import("./Home/Logo"), { ssr: false });
-const DemoVideoSection = dynamic(() => import("./Home/DemoVideoSection"), { ssr: false });
-const ProjectSection = dynamic(() => import("./Home/ProjectSection"), { ssr: false });
-const ServiceSection = dynamic(() => import("./Home/ServiceSection"), { ssr: false });
-const SkillsSection = dynamic(() => import("./Home/SkillsSection"), { ssr: false });
-const TestimonialsSection = dynamic(() =>
-  import("./Home/TestimonialSection")
-);
-const ProblemSolutionSection = dynamic(() =>
-  import("./Home/ProblemSolutionSection")
-);
-const FAQSection = dynamic(() => import("./Home/FAQSection"), { ssr: false });
 
 export default function Home() {
   return (
@@ -29,17 +22,36 @@ export default function Home() {
       <HeroSection />
 
       {/* Lazy Loaded Sections */}
-      <Suspense
-        fallback={null}
-      >
-        <Logo />
-        <DemoVideoSection />
-        <ProblemSolutionSection />
-        <ProjectSection />
-        <SkillsSection />
-        <ServiceSection />
-        <TestimonialsSection />
-        <FAQSection />
+      <Suspense fallback={<SectionSkeleton height="120px" />}>
+        <LazyLogo />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="500px" />}>
+        <LazyDemoVideo />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="600px" />}>
+        <LazyProblemSolution />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="700px" />}>
+        <LazyProject />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="500px" />}>
+        <LazySkills />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="500px" />}>
+        <LazyService />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="600px" />}>
+        <LazyTestimonials />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton height="700px" />}>
+        <LazyFAQ />
       </Suspense>
     </>
   );

@@ -3,15 +3,10 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { ChevronRight, Sparkles, Zap, Shield, Award, MessageCircle, Phone, Mail } from "lucide-react";
 
 
 const PricingPage = () => {
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true, easing: "ease-out-cubic", offset: 100 });
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -119,7 +114,7 @@ const PricingPage = () => {
           </motion.div>
 
           {/* Web Development Plans */}
-          <div className="mb-20" data-aos="fade-up">
+          <div className="mb-20 animate-fade-slide-up" style={{ animationDelay: "150ms" }}>
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Web Development Plans</h2>
               <p className="text-gray-500 mt-2">Choose a plan that fits your project scope</p>
@@ -179,7 +174,7 @@ const PricingPage = () => {
           </div>
 
           {/* UI/UX Design Pricing */}
-          <div className="grid md:grid-cols-2 gap-8 mb-20" data-aos="fade-up">
+          <div className="grid md:grid-cols-2 gap-8 mb-20 animate-fade-slide-up" style={{ animationDelay: "200ms" }}>
             <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-blue-100 shadow-md">
               <h3 className="text-2xl font-bold text-gray-800 mb-2">UI/UX Design Pricing</h3>
               <div className="flex justify-between items-center mt-4">
@@ -205,7 +200,7 @@ const PricingPage = () => {
           </div>
 
           {/* App, SaaS, Dashboards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-20" data-aos="fade-up">
+          <div className="grid md:grid-cols-3 gap-8 mb-20 animate-fade-slide-up" style={{ animationDelay: "200ms" }}>
             <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-blue-100 shadow-md hover:shadow-lg transition">
               <div className="text-3xl mb-3">📱</div>
               <h3 className="text-xl font-bold text-gray-800">App Development</h3>
@@ -240,7 +235,7 @@ const PricingPage = () => {
           </div>
 
           {/* Extra Services */}
-          <div className="mb-20" data-aos="fade-up">
+          <div className="mb-20 animate-fade-slide-up" style={{ animationDelay: "200ms" }}>
             <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Additional Services</h2>
               <p className="text-gray-500 mt-2">Enhance your project with our add-ons</p>
@@ -261,7 +256,7 @@ const PricingPage = () => {
           </div>
 
           {/* Chat / CTA Section */}
-          <div className="relative" data-aos="fade-up">
+          <div className="relative animate-fade-slide-up" style={{ animationDelay: "250ms" }}>
             <div className="bg-gradient-to-br from-white/80 to-blue-50/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-8 md:p-12 text-center relative overflow-hidden">
               <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-300/30 rounded-full blur-3xl" />
               <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl" />

@@ -12,7 +12,7 @@ import {
 import { FiMail, FiPhone, FiMapPin, FiSend } from "react-icons/fi";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2025;
 
   const quickLinks = [
     { name: "Home", href: "/" },

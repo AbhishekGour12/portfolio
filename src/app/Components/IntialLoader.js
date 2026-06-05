@@ -7,11 +7,14 @@ export default function InitialLoader({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1200);
-
-    return () => clearTimeout(timer);
+    const done = () => setLoading(false);
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = requestIdleCallback(done, { timeout: 800 });
+      return () => cancelIdleCallback(id);
+    } else {
+      const t = setTimeout(done, 600);
+      return () => clearTimeout(t);
+    }
   }, []);
 
   if (loading) {

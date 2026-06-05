@@ -71,6 +71,16 @@ const ProblemSolutionSection = () => {
   const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Scroll‑activated connection
   const { scrollYProgress } = useScroll({
@@ -93,6 +103,8 @@ const ProblemSolutionSection = () => {
     });
     return () => unsubscribe();
   }, [lineProgress]);
+
+  if (mounted && isMobile) return null;
 
   return (
     <section
@@ -265,7 +277,7 @@ const ProblemSolutionSection = () => {
         </motion.div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.2; transform: translateX(-50%) scale(1); }
           50% { opacity: 1; transform: translateX(-50%) scale(1.5); }
