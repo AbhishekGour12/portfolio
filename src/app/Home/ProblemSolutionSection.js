@@ -2,16 +2,16 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { 
-  FaSearch, 
-  FaPaintBrush, 
-  FaTachometerAlt, 
-  FaRobot, 
-  FaUsers, 
-  FaChartLine, 
-  FaCloud, 
-  FaMicrochip, 
-  FaRocket 
+import {
+  FaSearch,
+  FaPaintBrush,
+  FaTachometerAlt,
+  FaRobot,
+  FaUsers,
+  FaChartLine,
+  FaCloud,
+  FaMicrochip,
+  FaRocket
 } from "react-icons/fa";
 import { MdOutlineDesignServices } from "react-icons/md";
 
@@ -113,7 +113,7 @@ const ProblemSolutionSection = () => {
       className="max-md:hidden relative w-full overflow-hidden py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
       style={{
         background: "linear-gradient(135deg, #f0f9ff 0%, #ffffff 60%, #e0f2fe 100%)",
-        
+
       }}
     >
       {/* Animated blobs & grid */}
@@ -167,11 +167,10 @@ const ProblemSolutionSection = () => {
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                 onMouseEnter={() => setHoveredIndex(idx)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className={`relative p-5 rounded-2xl backdrop-blur-sm transition-all duration-300 cursor-pointer ${
-                  activeIndex === idx
+                className={`relative p-5 rounded-2xl backdrop-blur-sm transition-all duration-300 cursor-pointer ${activeIndex === idx
                     ? "bg-white/80 border-l-4 border-[#1E40AF] shadow-md"
                     : "bg-white/40 border border-white/40 hover:bg-white/60"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-4">
                   <div className="text-2xl">{item.problemIcon}</div>
@@ -229,11 +228,10 @@ const ProblemSolutionSection = () => {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                 whileHover={{ scale: 1.02 }}
-                className={`relative p-5 rounded-2xl backdrop-blur-sm transition-all duration-300 ${
-                  activeIndex === idx
+                className={`relative p-5 rounded-2xl backdrop-blur-sm transition-all duration-300 ${activeIndex === idx
                     ? "bg-gradient-to-r from-[#1E40AF]/10 to-[#60A5FA]/10 border border-[#60A5FA]/50 shadow-lg"
                     : "bg-white/30 border border-white/40 hover:bg-white/50"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-4">
                   <div className="text-2xl">{item.solutionIcon}</div>

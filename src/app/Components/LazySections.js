@@ -23,7 +23,11 @@ export function LazyDemoVideo() {
 
 export function LazyProblemSolution() {
   const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "300px" });
-  return <div ref={ref} style={{ minHeight: "600px", width: "100%" }}>{inView ? <ProblemSolutionSection /> : null}</div>;
+  return (
+    <div ref={ref} className="hidden md:block" style={{ minHeight: "600px", width: "100%" }}>
+      {inView ? <ProblemSolutionSection /> : null}
+    </div>
+  );
 }
 
 export function LazyProject() {
